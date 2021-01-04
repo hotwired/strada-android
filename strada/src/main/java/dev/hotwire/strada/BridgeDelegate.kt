@@ -1,4 +1,4 @@
-package com.basecamp.strata
+package dev.hotwire.strada
 
 interface BridgeDelegate {
     fun bridgeDidInitialize()

@@ -1,12 +1,12 @@
-package com.basecamp.strata
+package dev.hotwire.strada
 
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import com.google.gson.GsonBuilder
 
-// These need to match whatever is set in strata.js
+// These need to match whatever is set in strada.js
 private const val bridgeGlobal = "window.nativeBridge"
-private const val bridgeJavascriptInterface = "Strata"
+private const val bridgeJavascriptInterface = "Strada"
 
 @Suppress("unused")
 class Bridge(val webView: WebView) {

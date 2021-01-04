@@ -1,4 +1,4 @@
-package com.basecamp.strata
+package dev.hotwire.strada
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider

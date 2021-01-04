@@ -70,15 +70,15 @@
     // Native handler
 
     ready() {
-      Strata.bridgeDidInitialize()
+      Strada.bridgeDidInitialize()
     }
 
     supportedComponentsUpdated() {
-      Strata.bridgeDidUpdateSupportedComponents()
+      Strada.bridgeDidUpdateSupportedComponents()
     }
 
     postMessage(message) {
-      Strata.bridgeDidReceiveMessage(message)
+      Strada.bridgeDidReceiveMessage(message)
     }
   }
 

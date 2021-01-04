@@ -8,7 +8,7 @@
 # If your project uses WebView with JS, uncomment the following
 # and specify the fully qualified class name to the JavaScript interface
 # class:
--keepclassmembers class com.basecamp.strata.Bridge {
+-keepclassmembers class dev.hotwire.strada.Bridge {
    public *;
 }
 
@@ -25,8 +25,8 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
-# Strata
--keep class com.basecamp.strata.** { *; }
+# Strada
+-keep class dev.hotwire.strada.** { *; }
 
 # Gson
 -keep class com.google.** { *; }

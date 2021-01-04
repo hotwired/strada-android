@@ -1,4 +1,4 @@
-package com.basecamp.strata
+package dev.hotwire.strada
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken

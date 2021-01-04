@@ -1,4 +1,4 @@
-package com.basecamp.strata
+package dev.hotwire.strada
 
 import android.os.Handler
 import android.os.Looper
@@ -18,6 +18,6 @@ internal fun runOnUiThread(func: () -> Unit) {
 
 internal fun log(message: String) {
     if (BuildConfig.DEBUG) {
-        Log.d("Strata", "[bridge] $message")
+        Log.d("Strada", "[bridge] $message")
     }
 }

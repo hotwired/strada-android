@@ -1,4 +1,4 @@
-package com.basecamp.strata
+package dev.hotwire.strada
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
