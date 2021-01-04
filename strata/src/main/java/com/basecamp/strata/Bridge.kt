@@ -4,11 +4,6 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import com.google.gson.GsonBuilder
 
-interface BridgeDelegate {
-    fun bridgeDidInitialize()
-    fun bridgeDidReceiveMessage(message: Message)
-}
-
 // These need to match whatever is set in strata.js
 private const val bridgeGlobal = "window.nativeBridge"
 private const val bridgeJavascriptInterface = "Strata"

@@ -1,6 +1,5 @@
 package com.basecamp.strata
 
-import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 
@@ -39,13 +38,12 @@ data class Message(
     @SerializedName("data") val data: MessageData = MessageData()
 ) {
     fun toJSON(): String {
-        return Gson().toJson(this)
+        return this.toJson()
     }
 
     companion object {
         fun fromJSON(json: String?): Message? = try {
-            val type = object : TypeToken<Message>() {}.type
-            Gson().fromJson<Message>(json, type)
+            json?.toObject(object : TypeToken<Message>() {})
         } catch (e: Exception) {
             log("Invalid message: $json")
             null
