@@ -1,10 +1,10 @@
-# Strata
+# Strada
 
 Strada is a light-weight library that provides a bridge for bi-directional, async communication between a native [iOS](https://github.com/hotwired/strada-ios)/Android app and a [web app](https://github.com/hotwired/strada-web) embedded in a web view. The bridge allows sending/receiving messages with a standard format.
 
 ## Installation
 
-While this repository is still private, Strata for Android can be installed via Gradle. Point a custom Maven repository to the library artifacts in your `app/build.gradle` file:
+While this repository is still private, Strada for Android can be installed via Gradle. Point a custom Maven repository to the library artifacts in your `app/build.gradle` file:
 
 ```groovy
 repositories {
