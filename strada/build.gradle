@@ -47,10 +47,10 @@ android {
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
         test.java.srcDirs += 'src/test/kotlin'
-        androidTest.java.srcDirs += 'src/androidTest/kotlin'
     }
 
     testOptions {
+        unitTests.includeAndroidResources = true
         unitTests.returnDefaultValues = true
     }
 }
@@ -62,12 +62,10 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.10.1'
 
     testImplementation 'junit:junit:4.13.2'
+    testImplementation 'androidx.test:core:1.5.0'
+    testImplementation 'org.robolectric:robolectric:4.9.2'
     testImplementation 'org.mockito:mockito-core:4.11.0'
     testImplementation 'com.nhaarman:mockito-kotlin:1.6.0'
-
-    androidTestImplementation 'android.arch.core:core-testing:1.1.1'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test:runner:1.5.2'
 }
 
 // Use the sources jar when publishing
