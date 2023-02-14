@@ -43,10 +43,6 @@ data class Message(
      */
     @SerialName("data") val data: MessageData
 ) {
-    fun toJSON(): String {
-        return Json.encodeToString(this)
-    }
-
     companion object {
         fun encodeData(vararg entries: Pair<String, String>): MessageData {
             return buildJsonObject {
@@ -60,7 +56,7 @@ data class Message(
             return Json.encodeToJsonElement(value)
         }
 
-        fun fromJSON(json: String?): Message? = try {
+        internal fun fromJson(json: String?): Message? = try {
             json?.let { Json.decodeFromString<Message>(it) }
         } catch (e: Exception) {
             log("Invalid message: $json")

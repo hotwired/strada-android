@@ -6,7 +6,6 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
-import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -50,14 +49,15 @@ class BridgeTest {
 
     @Test
     fun send() {
-        val json = """{\"id\":\"1\",\"component\":\"page\",\"event\":\"connect\",\"data\":{\"title\":\"Page title\",\"subtitle\":\"Page subtitle\"}}"""
+        val json = """{\"id\":\"1\",\"component\":\"page\",\"event\":\"connect\",\"data\":{\"title\":\"Page title\",\"subtitle\":\"Page subtitle\",\"html\":\"<span class='android'>content</span>\"}}"""
         val message = Message(
             id = "1",
             component = "page",
             event = "connect",
             data = Message.encodeData(
                 "title" to "Page title",
-                "subtitle" to "Page subtitle"
+                "subtitle" to "Page subtitle",
+                "html" to "<span class='android'>content</span>"
             )
         )
 
@@ -116,22 +116,22 @@ class BridgeTest {
 
     @Test
     fun generateJavascript() {
-        val javascript = bridge.generateJavaScript("register", "page")
+        val javascript = bridge.generateJavaScript("register", "page".toJsonElement())
         assertEquals("""window.nativeBridge.register("page")""", javascript)
     }
 
     @Test
     fun generateJavascriptArguments() {
-        val javascript = bridge.generateJavaScript("register", listOf("page", "alert"))
+        val javascript = bridge.generateJavaScript("register", listOf("page", "alert").toJsonElement())
         assertEquals("""window.nativeBridge.register(["page","alert"])""", javascript)
     }
 
     @Test
     fun encode() {
-        assertEquals("\"page\"", bridge.encode(listOf("page")))
+        assertEquals("\"page\"", bridge.encode(listOf("page".toJsonElement())))
 
-        val arguments = listOf("page", "alert")
-        assertEquals("[\"page\",\"alert\"]", bridge.encode(listOf(arguments)))
+        val argument = listOf("page", "alert").toJsonElement()
+        assertEquals("[\"page\",\"alert\"]", bridge.encode(listOf(argument)))
     }
 
     @Test

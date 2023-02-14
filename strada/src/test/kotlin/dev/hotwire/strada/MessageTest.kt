@@ -61,12 +61,12 @@ class MessageTest {
             data = Message.encodeData(createPage())
         )
 
-        assertEquals(json, message.toJSON())
+        assertEquals(json, message.toJson())
     }
 
     @Test
     fun fromJson() {
-        val message = Message.fromJSON(json)
+        val message = Message.fromJson(json)
         val page = message?.data?.decode<Page>()
 
         assertEquals("1", message?.id)
