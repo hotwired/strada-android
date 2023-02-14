@@ -79,6 +79,15 @@ class MessageTest {
         assertEquals("three", page?.actions?.get(2))
     }
 
+    @Test
+    fun fromJsonNoData() {
+        val noDataJson = """{"id":"1","component":"page","event":"connect"}"""
+        val message = Message.fromJson(noDataJson)
+
+        assertEquals("1", message?.id)
+        assertEquals(0, message?.data?.jsonObject?.size)
+    }
+
     private fun createPage(): Page {
         return Page(
             title = "Page-title",

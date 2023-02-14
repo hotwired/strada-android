@@ -41,7 +41,7 @@ data class Message(
      * Any data to send along with the message, for a "page" component,
      * this might be the ["title": "Page Title"]
      */
-    @SerialName("data") val data: MessageData
+    @SerialName("data") val data: MessageData = Json.parseToJsonElement("{}")
 ) {
     companion object {
         fun encodeData(vararg entries: Pair<String, String>): MessageData {
