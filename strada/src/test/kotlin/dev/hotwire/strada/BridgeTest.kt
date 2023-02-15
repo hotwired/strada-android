@@ -6,7 +6,6 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
-import kotlinx.serialization.json.jsonObject
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -50,15 +49,12 @@ class BridgeTest {
     @Test
     fun send() {
         val json = """{\"id\":\"1\",\"component\":\"page\",\"event\":\"connect\",\"data\":{\"title\":\"Page title\",\"subtitle\":\"Page subtitle\",\"html\":\"<span class='android'>content</span>\"}}"""
+        val data = """{"title":"Page title","subtitle":"Page subtitle","html":"<span class='android'>content</span>"}"""
         val message = Message(
             id = "1",
             component = "page",
             event = "connect",
-            data = Message.encodeData(
-                "title" to "Page title",
-                "subtitle" to "Page subtitle",
-                "html" to "<span class='android'>content</span>"
-            )
+            data = data
         )
 
         val javascript = """window.nativeBridge.send("$json")"""
@@ -84,19 +80,16 @@ class BridgeTest {
     @Test
     fun bridgeDidReceiveMessage() {
         val json = """{"id":"1","component":"page","event":"connect","data":{"title":"Page title","subtitle":"Page subtitle"}}"""
+        val data = """{"title":"Page title","subtitle":"Page subtitle"}"""
         val message = Message(
             id = "1",
             component = "page",
             event = "connect",
-            data = Message.encodeData(
-                "title" to "Page title",
-                "subtitle" to "Page subtitle"
-            )
+            data = data
         )
 
         bridge.bridgeDidReceiveMessage(json)
         verify(delegate).bridgeDidReceiveMessage(message)
-        assertEquals(2, message.data.jsonObject.size)
     }
 
     @Test
