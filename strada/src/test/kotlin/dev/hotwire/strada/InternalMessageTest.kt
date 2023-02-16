@@ -31,7 +31,7 @@ class InternalMessageTest {
 
     @Test
     fun toMessage() {
-        val messageDataJson = """{"title":"Page-title","subtitle":"Page-subtitle","actions":["one","two","three"]}"""
+        val messageJsonData = """{"title":"Page-title","subtitle":"Page-subtitle","actions":["one","two","three"]}"""
         val message = InternalMessage(
             id = "1",
             component = "page",
@@ -42,7 +42,7 @@ class InternalMessageTest {
         assertEquals("1", message.id)
         assertEquals("page", message.component)
         assertEquals("connect", message.event)
-        assertEquals(messageDataJson, message.data)
+        assertEquals(messageJsonData, message.jsonData)
     }
 
     @Test

@@ -54,7 +54,7 @@ class BridgeTest {
             id = "1",
             component = "page",
             event = "connect",
-            data = data
+            jsonData = data
         )
 
         val javascript = """window.nativeBridge.send("$json")"""
@@ -85,7 +85,7 @@ class BridgeTest {
             id = "1",
             component = "page",
             event = "connect",
-            data = data
+            jsonData = data
         )
 
         bridge.bridgeDidReceiveMessage(json)

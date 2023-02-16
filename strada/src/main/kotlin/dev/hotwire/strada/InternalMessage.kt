@@ -17,7 +17,7 @@ internal data class InternalMessage(
         id = id,
         component = component,
         event = event,
-        data = data.toJson()
+        jsonData = data.toJson()
     )
 
     companion object {
@@ -25,7 +25,7 @@ internal data class InternalMessage(
             id = message.id,
             component = message.component,
             event = message.event,
-            data = Json.parseToJsonElement(message.data)
+            data = Json.parseToJsonElement(message.jsonData)
         )
 
         fun fromJson(json: String?) = try {

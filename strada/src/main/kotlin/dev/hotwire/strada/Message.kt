@@ -1,7 +1,5 @@
 package dev.hotwire.strada
 
-typealias JsonString = String
-
 data class Message(
     /**
      * A unique identifier for this message. You can reply to messages by sending
@@ -21,7 +19,7 @@ data class Message(
 
     /**
      * Data, represented in a json object string, to send along with the message.
-     * For a "page" component, this might be {"title": "Page Title"}
+     * For a "page" component, this might be `{"title": "Page Title"}`
      */
-    val data: JsonString
+    val jsonData: String
 )
