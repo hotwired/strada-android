@@ -27,9 +27,3 @@
 
 # Strada
 -keep class dev.hotwire.strada.** { *; }
-
-# Gson
--keep class com.google.** { *; }
--keep class org.apache.** { *; }
--keep class javax.** { *; }
--keep class sun.misc.Unsafe { *; }

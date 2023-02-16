@@ -48,12 +48,13 @@ class BridgeTest {
 
     @Test
     fun send() {
-        val json = """{\"id\":\"1\",\"component\":\"page\",\"event\":\"connect\",\"data\":{\"title\":\"Page title\"}}"""
+        val json = """{\"id\":\"1\",\"component\":\"page\",\"event\":\"connect\",\"data\":{\"title\":\"Page title\",\"subtitle\":\"Page subtitle\",\"html\":\"<span class='android'>content</span>\"}}"""
+        val data = """{"title":"Page title","subtitle":"Page subtitle","html":"<span class='android'>content</span>"}"""
         val message = Message(
             id = "1",
             component = "page",
             event = "connect",
-            data = hashMapOf("title" to "Page title")
+            jsonData = data
         )
 
         val javascript = """window.nativeBridge.send("$json")"""
@@ -78,12 +79,13 @@ class BridgeTest {
 
     @Test
     fun bridgeDidReceiveMessage() {
-        val json = """{"id":"1","component":"page","event":"connect","data":{"title":"Page title"}}"""
+        val json = """{"id":"1","component":"page","event":"connect","data":{"title":"Page title","subtitle":"Page subtitle"}}"""
+        val data = """{"title":"Page title","subtitle":"Page subtitle"}"""
         val message = Message(
             id = "1",
             component = "page",
             event = "connect",
-            data = hashMapOf("title" to "Page title")
+            jsonData = data
         )
 
         bridge.bridgeDidReceiveMessage(json)
@@ -107,22 +109,22 @@ class BridgeTest {
 
     @Test
     fun generateJavascript() {
-        val javascript = bridge.generateJavaScript("register", "page")
+        val javascript = bridge.generateJavaScript("register", "page".toJsonElement())
         assertEquals("""window.nativeBridge.register("page")""", javascript)
     }
 
     @Test
     fun generateJavascriptArguments() {
-        val javascript = bridge.generateJavaScript("register", listOf("page", "alert"))
+        val javascript = bridge.generateJavaScript("register", listOf("page", "alert").toJsonElement())
         assertEquals("""window.nativeBridge.register(["page","alert"])""", javascript)
     }
 
     @Test
     fun encode() {
-        assertEquals("\"page\"", bridge.encode(listOf("page")))
+        assertEquals("\"page\"", bridge.encode(listOf("page".toJsonElement())))
 
-        val arguments = listOf("page", "alert")
-        assertEquals("[\"page\",\"alert\"]", bridge.encode(listOf(arguments)))
+        val argument = listOf("page", "alert").toJsonElement()
+        assertEquals("[\"page\",\"alert\"]", bridge.encode(listOf(argument)))
     }
 
     @Test

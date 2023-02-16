@@ -2,7 +2,7 @@ package dev.hotwire.strada
 
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
-import com.google.gson.GsonBuilder
+import kotlinx.serialization.json.JsonElement
 
 // These need to match whatever is set in strada.js
 private const val bridgeGlobal = "window.nativeBridge"
@@ -22,22 +22,23 @@ class Bridge(val webView: WebView) {
     }
 
     fun register(component: String) {
-        val javascript = generateJavaScript("register", component)
+        val javascript = generateJavaScript("register", component.toJsonElement())
         evaluate(javascript)
     }
 
     fun register(components: List<String>) {
-        val javascript = generateJavaScript("register", components)
+        val javascript = generateJavaScript("register", components.toJsonElement())
         evaluate(javascript)
     }
 
     fun unregister(component: String) {
-        val javascript = generateJavaScript("unregister", component)
+        val javascript = generateJavaScript("unregister", component.toJsonElement())
         evaluate(javascript)
     }
 
     fun send(message: Message) {
-        val javascript = generateJavaScript("send", message.toJSON())
+        val internalMessage = InternalMessage.fromMessage(message)
+        val javascript = generateJavaScript("send", internalMessage.toJson().toJsonElement())
         evaluate(javascript)
     }
 
@@ -67,8 +68,8 @@ class Bridge(val webView: WebView) {
     fun bridgeDidReceiveMessage(message: String?) {
         log("message received: $message")
         runOnUiThread {
-            Message.fromJSON(message)?.let {
-                delegate?.bridgeDidReceiveMessage(it)
+            InternalMessage.fromJson(message)?.let {
+                delegate?.bridgeDidReceiveMessage(it.toMessage())
             }
         }
     }
@@ -84,15 +85,14 @@ class Bridge(val webView: WebView) {
         webView.evaluateJavascript(javascript) {}
     }
 
-    internal fun generateJavaScript(bridgeFunction: String, vararg arguments: Any): String {
+    internal fun generateJavaScript(bridgeFunction: String, vararg arguments: JsonElement): String {
         val functionName = sanitizeFunctionName(bridgeFunction)
         val encodedArguments = encode(arguments.toList())
         return "$bridgeGlobal.$functionName($encodedArguments)"
     }
 
-    internal fun encode(arguments: List<Any>): String {
-        val gson = GsonBuilder().disableHtmlEscaping().create()
-        return arguments.joinToString(",") { gson.toJson(it) }
+    internal fun encode(arguments: List<JsonElement>): String {
+        return arguments.joinToString(",") { it.toJson() }
     }
 
     internal fun sanitizeFunctionName(name: String): String {
