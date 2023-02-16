@@ -3,11 +3,10 @@ package dev.hotwire.strada
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class MessageTest {
+class InternalMessageTest {
     @Serializable
     private data class Page(
         @SerialName("title") val title: String,
@@ -31,34 +30,28 @@ class MessageTest {
     }""".replace("\\s".toRegex(), "")
 
     @Test
-    fun messageDataObject() {
-        val page = createPage()
-        val data = Message.encodeData(page)
-        val decodedPage = data.decode<Page>()
+    fun toMessage() {
+        val messageJsonData = """{"title":"Page-title","subtitle":"Page-subtitle","actions":["one","two","three"]}"""
+        val message = InternalMessage(
+            id = "1",
+            component = "page",
+            event = "connect",
+            data = createPage().toJsonElement()
+        ).toMessage()
 
-        assertEquals(3, data.jsonObject.size)
-        assertEquals(page, decodedPage)
-    }
-
-    @Test
-    fun messageDataPairs() {
-        val data = Message.encodeData(
-            "one-key" to "one-value",
-            "two-key" to "two-value"
-        )
-
-        assertEquals(2, data.jsonObject.size)
-        assertEquals("one-value", data.jsonObject["one-key"]?.jsonPrimitive?.content)
-        assertEquals("two-value", data.jsonObject["two-key"]?.jsonPrimitive?.content)
+        assertEquals("1", message.id)
+        assertEquals("page", message.component)
+        assertEquals("connect", message.event)
+        assertEquals(messageJsonData, message.jsonData)
     }
 
     @Test
     fun toJson() {
-        val message = Message(
+        val message = InternalMessage(
             id = "1",
             component = "page",
             event = "connect",
-            data = Message.encodeData(createPage())
+            data = createPage().toJsonElement()
         )
 
         assertEquals(json, message.toJson())
@@ -66,7 +59,7 @@ class MessageTest {
 
     @Test
     fun fromJson() {
-        val message = Message.fromJson(json)
+        val message = InternalMessage.fromJson(json)
         val page = message?.data?.decode<Page>()
 
         assertEquals("1", message?.id)
@@ -82,7 +75,7 @@ class MessageTest {
     @Test
     fun fromJsonNoData() {
         val noDataJson = """{"id":"1","component":"page","event":"connect"}"""
-        val message = Message.fromJson(noDataJson)
+        val message = InternalMessage.fromJson(noDataJson)
 
         assertEquals("1", message?.id)
         assertEquals(0, message?.data?.jsonObject?.size)

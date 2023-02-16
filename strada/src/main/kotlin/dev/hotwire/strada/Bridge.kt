@@ -37,7 +37,8 @@ class Bridge(val webView: WebView) {
     }
 
     fun send(message: Message) {
-        val javascript = generateJavaScript("send", message.toJson().toJsonElement())
+        val internalMessage = InternalMessage.fromMessage(message)
+        val javascript = generateJavaScript("send", internalMessage.toJson().toJsonElement())
         evaluate(javascript)
     }
 
@@ -67,8 +68,8 @@ class Bridge(val webView: WebView) {
     fun bridgeDidReceiveMessage(message: String?) {
         log("message received: $message")
         runOnUiThread {
-            Message.fromJson(message)?.let {
-                delegate?.bridgeDidReceiveMessage(it)
+            InternalMessage.fromJson(message)?.let {
+                delegate?.bridgeDidReceiveMessage(it.toMessage())
             }
         }
     }
