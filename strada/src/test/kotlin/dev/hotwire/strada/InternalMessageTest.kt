@@ -6,7 +6,7 @@ import kotlinx.serialization.json.jsonObject
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class MessageInternalTest {
+class InternalMessageTest {
     @Serializable
     private data class Page(
         @SerialName("title") val title: String,
@@ -32,7 +32,7 @@ class MessageInternalTest {
     @Test
     fun toMessage() {
         val messageDataJson = """{"title":"Page-title","subtitle":"Page-subtitle","actions":["one","two","three"]}"""
-        val message = MessageInternal(
+        val message = InternalMessage(
             id = "1",
             component = "page",
             event = "connect",
@@ -47,7 +47,7 @@ class MessageInternalTest {
 
     @Test
     fun toJson() {
-        val message = MessageInternal(
+        val message = InternalMessage(
             id = "1",
             component = "page",
             event = "connect",
@@ -59,7 +59,7 @@ class MessageInternalTest {
 
     @Test
     fun fromJson() {
-        val message = MessageInternal.fromJson(json)
+        val message = InternalMessage.fromJson(json)
         val page = message?.data?.decode<Page>()
 
         assertEquals("1", message?.id)
@@ -75,7 +75,7 @@ class MessageInternalTest {
     @Test
     fun fromJsonNoData() {
         val noDataJson = """{"id":"1","component":"page","event":"connect"}"""
-        val message = MessageInternal.fromJson(noDataJson)
+        val message = InternalMessage.fromJson(noDataJson)
 
         assertEquals("1", message?.id)
         assertEquals(0, message?.data?.jsonObject?.size)

@@ -7,7 +7,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
 @Serializable
-internal data class MessageInternal(
+internal data class InternalMessage(
     @SerialName("id") val id: String,
     @SerialName("component") val component: String,
     @SerialName("event") val event: String,
@@ -21,7 +21,7 @@ internal data class MessageInternal(
     )
 
     companion object {
-        fun fromMessage(message: Message) = MessageInternal(
+        fun fromMessage(message: Message) = InternalMessage(
             id = message.id,
             component = message.component,
             event = message.event,
@@ -29,7 +29,7 @@ internal data class MessageInternal(
         )
 
         fun fromJson(json: String?) = try {
-            json?.let { Json.decodeFromString<MessageInternal>(it) }
+            json?.let { Json.decodeFromString<InternalMessage>(it) }
         } catch (e: Exception) {
             log("Invalid message: $json")
             null
