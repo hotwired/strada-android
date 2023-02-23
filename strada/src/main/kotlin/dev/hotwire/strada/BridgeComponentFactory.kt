@@ -1,6 +1,13 @@
 package dev.hotwire.strada
 
-interface BridgeComponentFactory<in R : BridgeDelegate, out T : BridgeComponent> {
-    val name: String
-    fun create(delegate: R): T
+class BridgeComponentFactory<in D : BridgeDelegate, out C : BridgeComponent> internal constructor(
+    val name: String,
+    private val creator: (name: String, delegate: D) -> C
+) {
+    fun create(delegate: D) = creator(name, delegate)
 }
+
+fun <D : BridgeDelegate, C : BridgeComponent> bridgeComponentFactory(
+    name: String,
+    creator: (name: String, delegate: D) -> C
+) = BridgeComponentFactory(name, creator)
