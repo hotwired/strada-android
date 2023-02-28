@@ -15,6 +15,17 @@ ext {
     gitUrl = 'https://github.com/hotwired/strada-android.git'
 }
 
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion"
+    }
+}
+
 repositories {
     google()
     mavenCentral()
