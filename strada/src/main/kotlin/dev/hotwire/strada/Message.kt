@@ -22,4 +22,19 @@ data class Message(
      * For a "page" component, this might be `{"title": "Page Title"}`
      */
     val jsonData: String
-)
+) {
+    /**
+     * Convenience method for creating a new message from an existing message,
+     * replacing its `event` and/or `jsonData`. The new message can be sent
+     * back to the over the bridge to notify the web of a change/action.
+     */
+    fun replacing(
+        event: String = this.event,
+        jsonData: String = this.jsonData
+    ) = Message(
+        id = this.id,
+        component = this.component,
+        event = event,
+        jsonData = jsonData
+    )
+}
