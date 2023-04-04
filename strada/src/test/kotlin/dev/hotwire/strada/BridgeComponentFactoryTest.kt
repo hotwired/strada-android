@@ -1,5 +1,7 @@
 package dev.hotwire.strada
 
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.testing.TestLifecycleOwner
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -12,20 +14,26 @@ class BridgeComponentFactoryTest {
             BridgeComponentFactory("two", ::TwoBridgeComponent)
         )
 
-        val componentOne = factories[0].create(AppBridgeDelegate(factories))
+        val delegate = AppBridgeDelegate(
+            destinationLocation = "https://37signals.com",
+            componentFactories = factories
+        )
+
+        val componentOne = factories[0].create(delegate)
         assertEquals("one", componentOne.name)
         assertTrue(componentOne is OneBridgeComponent)
 
-        val componentTwo = factories[1].create(AppBridgeDelegate(factories))
+        val componentTwo = factories[1].create(delegate)
         assertEquals("two", componentTwo.name)
         assertTrue(componentTwo is TwoBridgeComponent)
     }
 
     private class AppBridgeDelegate(
+        destinationLocation: String,
+        lifecycleOwner: LifecycleOwner = TestLifecycleOwner(),
         componentFactories: List<BridgeComponentFactory<AppBridgeDelegate, AppBridgeComponent>>,
-    ) : BridgeDelegate(componentFactories) {
-        override fun bridgeDidInitialize() {}
-        override fun bridgeDidReceiveMessage(message: Message) {}
+    ) : BridgeDelegate(destinationLocation, lifecycleOwner, componentFactories) {
+        override fun webViewIsReady() = true
     }
 
     private abstract class AppBridgeComponent(

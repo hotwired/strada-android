@@ -5,4 +5,6 @@ abstract class BridgeComponent(
     private val delegate: BridgeDelegate
 ) {
     abstract fun handle(message: Message)
+    fun onStart() {}
+    fun onStop() {}
 }

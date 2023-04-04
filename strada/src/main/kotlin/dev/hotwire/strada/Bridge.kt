@@ -11,10 +11,9 @@ private const val bridgeJavascriptInterface = "Strada"
 @Suppress("unused")
 class Bridge(val webView: WebView) {
     internal var repository = Repository()
+    private var componentsAreRegistered: Boolean = false
 
     var delegate: BridgeDelegate? = null
-    var componentsAreRegistered: Boolean = false
-        private set
 
     init {
         // The JavascriptInterface must be added before the page is loaded
@@ -37,6 +36,7 @@ class Bridge(val webView: WebView) {
     }
 
     fun send(message: Message) {
+        logMessage("bridgeWillSendMessage", message)
         val internalMessage = InternalMessage.fromMessage(message)
         val javascript = generateJavaScript("send", internalMessage.toJson().toJsonElement())
         evaluate(javascript)
@@ -50,9 +50,13 @@ class Bridge(val webView: WebView) {
         componentsAreRegistered = false
     }
 
+    fun isReady(): Boolean {
+        return componentsAreRegistered
+    }
+
     @JavascriptInterface
     fun bridgeDidInitialize() {
-        log("bridge initialized")
+        logEvent("bridgeDidInitialize")
         runOnUiThread {
             delegate?.bridgeDidInitialize()
         }
@@ -60,13 +64,12 @@ class Bridge(val webView: WebView) {
 
     @JavascriptInterface
     fun bridgeDidUpdateSupportedComponents() {
-        log("bridge components registered")
+        logEvent("bridgeDidUpdateSupportedComponents")
         componentsAreRegistered = true
     }
 
     @JavascriptInterface
     fun bridgeDidReceiveMessage(message: String?) {
-        log("message received: $message")
         runOnUiThread {
             InternalMessage.fromJson(message)?.let {
                 delegate?.bridgeDidReceiveMessage(it.toMessage())
@@ -81,7 +84,7 @@ class Bridge(val webView: WebView) {
     }
 
     internal fun evaluate(javascript: String) {
-        log("evaluating $javascript")
+        logEvent("evaluatingJavascript", javascript)
         webView.evaluateJavascript(javascript) {}
     }
 

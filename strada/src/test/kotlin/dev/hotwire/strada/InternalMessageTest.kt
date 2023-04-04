@@ -18,6 +18,9 @@ class InternalMessageTest {
         "id":"1",
         "component":"page",
         "event":"connect",
+        "metadata":{
+            "url":"https://37signals.com"
+        },
         "data":{
             "title":"Page-title",
             "subtitle":"Page-subtitle",
@@ -36,6 +39,7 @@ class InternalMessageTest {
             id = "1",
             component = "page",
             event = "connect",
+            metadata = InternalMetadata(url = "https://37signals.com"),
             data = createPage().toJsonElement()
         ).toMessage()
 
@@ -51,6 +55,7 @@ class InternalMessageTest {
             id = "1",
             component = "page",
             event = "connect",
+            metadata = InternalMetadata(url = "https://37signals.com"),
             data = createPage().toJsonElement()
         )
 
@@ -74,7 +79,7 @@ class InternalMessageTest {
 
     @Test
     fun fromJsonNoData() {
-        val noDataJson = """{"id":"1","component":"page","event":"connect"}"""
+        val noDataJson = """{"id":"1","component":"page","event":"connect","metadata":{"url":"https://37signals.com"}}"""
         val message = InternalMessage.fromJson(noDataJson)
 
         assertEquals("1", message?.id)

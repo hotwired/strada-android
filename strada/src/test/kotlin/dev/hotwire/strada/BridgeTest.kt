@@ -48,12 +48,13 @@ class BridgeTest {
 
     @Test
     fun send() {
-        val json = """{\"id\":\"1\",\"component\":\"page\",\"event\":\"connect\",\"data\":{\"title\":\"Page title\",\"subtitle\":\"Page subtitle\",\"html\":\"<span class='android'>content</span>\"}}"""
+        val json = """{\"id\":\"1\",\"component\":\"page\",\"event\":\"connect\",\"metadata\":{\"url\":\"https://37signals.com\"},\"data\":{\"title\":\"Page title\",\"subtitle\":\"Page subtitle\",\"html\":\"<span class='android'>content</span>\"}}"""
         val data = """{"title":"Page title","subtitle":"Page subtitle","html":"<span class='android'>content</span>"}"""
         val message = Message(
             id = "1",
             component = "page",
             event = "connect",
+            metadata = Metadata("https://37signals.com"),
             jsonData = data
         )
 
@@ -79,12 +80,13 @@ class BridgeTest {
 
     @Test
     fun bridgeDidReceiveMessage() {
-        val json = """{"id":"1","component":"page","event":"connect","data":{"title":"Page title","subtitle":"Page subtitle"}}"""
+        val json = """{"id":"1","component":"page","event":"connect","metadata":{"url":"https://37signals.com"},"data":{"title":"Page title","subtitle":"Page subtitle"}}"""
         val data = """{"title":"Page title","subtitle":"Page subtitle"}"""
         val message = Message(
             id = "1",
             component = "page",
             event = "connect",
+            metadata = Metadata("https://37signals.com"),
             jsonData = data
         )
 
