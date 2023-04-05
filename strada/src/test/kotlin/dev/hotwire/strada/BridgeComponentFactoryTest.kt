@@ -1,6 +1,5 @@
 package dev.hotwire.strada
 
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.testing.TestLifecycleOwner
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -15,7 +14,7 @@ class BridgeComponentFactoryTest {
         )
 
         val delegate = AppBridgeDelegate(
-            destinationLocation = "https://37signals.com",
+            destination = AppBridgeDestination(),
             componentFactories = factories
         )
 
@@ -29,28 +28,31 @@ class BridgeComponentFactoryTest {
     }
 
     private class AppBridgeDelegate(
-        destinationLocation: String,
-        lifecycleOwner: LifecycleOwner = TestLifecycleOwner(),
-        componentFactories: List<BridgeComponentFactory<AppBridgeDelegate, AppBridgeComponent>>,
-    ) : BridgeDelegate(destinationLocation, lifecycleOwner, componentFactories) {
+        destination: AppBridgeDestination,
+        componentFactories: List<BridgeComponentFactory<AppBridgeDestination, AppBridgeComponent>>,
+    ) : BridgeDelegate<AppBridgeDestination>(destination, componentFactories)
+
+    class AppBridgeDestination : BridgeDestination {
+        override fun destinationLocation() = "https://37signals.com"
+        override fun destinationLifecycleOwner() = TestLifecycleOwner()
         override fun webViewIsReady() = true
     }
 
     private abstract class AppBridgeComponent(
         name: String,
-        delegate: AppBridgeDelegate
-    ) : BridgeComponent(name, delegate)
+        delegate: BridgeDelegate<AppBridgeDestination>
+    ) : BridgeComponent<AppBridgeDestination>(name, delegate)
 
     private class OneBridgeComponent(
         name: String,
-        delegate: AppBridgeDelegate
+        delegate: BridgeDelegate<AppBridgeDestination>
     ) : AppBridgeComponent(name, delegate) {
         override fun handle(message: Message) {}
     }
 
     private class TwoBridgeComponent(
         name: String,
-        delegate: AppBridgeDelegate
+        delegate: BridgeDelegate<AppBridgeDestination>
     ) : AppBridgeComponent(name, delegate) {
         override fun handle(message: Message) {}
     }

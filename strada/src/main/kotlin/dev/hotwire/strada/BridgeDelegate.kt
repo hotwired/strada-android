@@ -3,35 +3,23 @@ package dev.hotwire.strada
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 
-abstract class BridgeDelegate(
-    private val destinationLocation: String,
-    private val lifecycleOwner: LifecycleOwner,
-    private val componentFactories: List<BridgeComponentFactory<*, *>>
+abstract class BridgeDelegate<D : BridgeDestination>(
+    val destination: D,
+    private val componentFactories: List<BridgeComponentFactory<D, BridgeComponent<D>>>
 ) {
     internal var bridge: Bridge? = null
     private var destinationIsActive = true
 
-    private val components = mutableListOf<BridgeComponent>()
-    protected val activeComponents: List<BridgeComponent>
+    private val components = hashMapOf<String, BridgeComponent<D>>()
+    protected val activeComponents: List<BridgeComponent<D>>
         get() = when (destinationIsActive) {
-            true -> components
+            true -> components.map { it.value }
             else -> emptyList()
         }
 
     init {
         observeLifeCycle()
-
-        // TODO Components should be lazily created when the first message from the bridge is received.
-        // componentFactories.forEach {
-        //     components.add(it.create(this))
-        // }
     }
-
-    /**
-     * Specifies whether the underlying WebView has cold booted to
-     * a url (i.e. onPageFinished() called) and is ready for use.
-     */
-    abstract fun webViewIsReady(): Boolean
 
     fun loadBridgeInWebView() {
         bridge?.load()
@@ -56,26 +44,27 @@ abstract class BridgeDelegate(
     }
 
     internal fun bridgeDidInitialize() {
-        bridge?.register(componentFactories.joinToString(" ") { it.name })
+        bridge?.register(componentFactories.map { it.name })
     }
 
     internal fun bridgeDidReceiveMessage(message: Message) {
-        if (destinationLocation == message.metadata.url) {
+        if (destination.destinationLocation() == message.metadata?.url) {
             logMessage("bridgeDidReceiveMessage", message)
-            component(message.component)?.handle(message)
+            getOrCreateComponent(message.component)?.handle(message)
         } else {
             logMessage("bridgeDidIgnoreMessage", message)
         }
     }
 
     private fun shouldReloadBridge(): Boolean {
-        return webViewIsReady() && bridge?.isReady() == false
+        return destination.webViewIsReady() && bridge?.isReady() == false
     }
 
     // Lifecycle events
 
     private fun observeLifeCycle() {
-        lifecycleOwner.lifecycle.addObserver(object : DefaultLifecycleObserver {
+        destination.destinationLifecycleOwner().lifecycle.addObserver(object :
+            DefaultLifecycleObserver {
             override fun onStart(owner: LifecycleOwner) { onStart() }
             override fun onStop(owner: LifecycleOwner) { onStop() }
         })
@@ -93,11 +82,25 @@ abstract class BridgeDelegate(
 
     // Retrieve an individual component
 
-    fun <T : BridgeComponent> component(clazz: Class<T>): T? {
+    fun <T : BridgeComponent<D>> component(clazz: Class<T>): T? {
         return activeComponents.filterIsInstance(clazz).firstOrNull()
     }
 
-    private fun component(name: String): BridgeComponent? {
+    private fun component(name: String): BridgeComponent<D>? {
         return activeComponents.firstOrNull { it.name == name }
+    }
+
+    private fun getOrCreateComponent(name: String): BridgeComponent<D>? {
+        components[name]?.let { return it }
+
+        val factory = componentFactories.firstOrNull { it.name == name }
+
+        return if (factory != null) {
+            val component = factory.create(this)
+            components[name] = component
+            component
+        } else {
+            null
+        }
     }
 }

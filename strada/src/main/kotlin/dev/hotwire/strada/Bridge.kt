@@ -13,7 +13,7 @@ class Bridge(val webView: WebView) {
     internal var repository = Repository()
     private var componentsAreRegistered: Boolean = false
 
-    var delegate: BridgeDelegate? = null
+    var delegate: BridgeDelegate<*>? = null
 
     init {
         // The JavascriptInterface must be added before the page is loaded
@@ -21,16 +21,19 @@ class Bridge(val webView: WebView) {
     }
 
     fun register(component: String) {
+        logEvent("bridgeWillRegisterComponent", component)
         val javascript = generateJavaScript("register", component.toJsonElement())
         evaluate(javascript)
     }
 
     fun register(components: List<String>) {
+        logEvent("bridgeWillRegisterComponents", components.joinToString())
         val javascript = generateJavaScript("register", components.toJsonElement())
         evaluate(javascript)
     }
 
     fun unregister(component: String) {
+        logEvent("bridgeWillUnregisterComponent", component)
         val javascript = generateJavaScript("unregister", component.toJsonElement())
         evaluate(javascript)
     }
@@ -43,10 +46,12 @@ class Bridge(val webView: WebView) {
     }
 
     fun load() {
+        logEvent("bridgeWillLoad")
         evaluate(userScript())
     }
 
     fun reset() {
+        logEvent("bridgeDidReset")
         componentsAreRegistered = false
     }
 

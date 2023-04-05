@@ -16,12 +16,14 @@ internal inline fun <reified T> T.toJson() = json.encodeToString(this)
 internal inline fun <reified T> JsonElement.decode(): T? = try {
     json.decodeFromJsonElement<T>(this)
 } catch (e: Exception) {
+    StradaLog.e("jsonElementDecodeException: ${e.stackTraceToString()}")
     null
 }
 
 internal inline fun <reified T> String.decode(): T? = try {
     json.decodeFromString<T>(this)
 } catch (e: Exception) {
+    StradaLog.e("jsonStringDecodeException: ${e.stackTraceToString()}")
     null
 }
 

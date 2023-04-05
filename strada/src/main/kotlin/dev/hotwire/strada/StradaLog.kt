@@ -4,11 +4,14 @@ import android.util.Log
 
 object StradaLog {
     private const val DEFAULT_TAG = "StradaLog"
+    private var enableDebugLogging = false
 
     /**
      * Enable debug logging to see message communication from/to the WebView.
      */
-    var enableDebugLogging = false
+    fun setDebugLoggingEnabled(enabled: Boolean) {
+        enableDebugLogging = enabled
+    }
 
     internal fun d(msg: String) = log(Log.DEBUG, DEFAULT_TAG, msg)
 

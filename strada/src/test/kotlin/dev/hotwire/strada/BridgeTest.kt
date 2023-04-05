@@ -2,6 +2,8 @@ package dev.hotwire.strada
 
 import android.content.Context
 import android.webkit.WebView
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.testing.TestLifecycleOwner
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
@@ -16,7 +18,7 @@ class BridgeTest {
     private val webView: WebView = mock()
     private val context: Context = mock()
     private val repository: Repository = mock()
-    private val delegate: BridgeDelegate = mock()
+    private val delegate: BridgeDelegate<AppBridgeDestination> = mock()
 
     @Before
     fun setup() {
@@ -132,5 +134,11 @@ class BridgeTest {
     @Test
     fun sanitizeFunctionName() {
         assertEquals(bridge.sanitizeFunctionName("send()"), "send")
+    }
+
+    class AppBridgeDestination : BridgeDestination {
+        override fun destinationLocation() = "https://37signals.com"
+        override fun destinationLifecycleOwner() = TestLifecycleOwner()
+        override fun webViewIsReady() = true
     }
 }
