@@ -2,8 +2,6 @@ package dev.hotwire.strada
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
 @Serializable
@@ -11,14 +9,13 @@ internal data class InternalMessage(
     @SerialName("id") val id: String,
     @SerialName("component") val component: String,
     @SerialName("event") val event: String,
-    @SerialName("metadata") val metadata: InternalMetadata,
-    @SerialName("data") val data: JsonElement = Json.parseToJsonElement("{}")
+    @SerialName("data") val data: JsonElement = "{}".parseToJsonElement()
 ) {
     fun toMessage() = Message(
         id = id,
         component = component,
         event = event,
-        metadata = Metadata(url = metadata.url),
+        metadata = data.decode<InternalDataMetadata>()?.let { Metadata(url = it.metadata.url) },
         jsonData = data.toJson()
     )
 
@@ -27,18 +24,17 @@ internal data class InternalMessage(
             id = message.id,
             component = message.component,
             event = message.event,
-            metadata = InternalMetadata(url = message.metadata.url),
-            data = Json.parseToJsonElement(message.jsonData)
+            data = message.jsonData.parseToJsonElement()
         )
 
-        fun fromJson(json: String?) = try {
-            json?.let { Json.decodeFromString<InternalMessage>(it) }
-        } catch (e: Exception) {
-            logEvent("jsonDecodeException", "$json")
-            null
-        }
+        fun fromJson(json: String?) = json?.decode<InternalMessage>()
     }
 }
+
+@Serializable
+internal data class InternalDataMetadata(
+    @SerialName("metadata") val metadata: InternalMetadata
+)
 
 @Serializable
 internal data class InternalMetadata(

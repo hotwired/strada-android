@@ -20,7 +20,7 @@ data class Message(
     /**
      * The metadata associated with the message, which includes its url
      */
-    val metadata: Metadata,
+    val metadata: Metadata?,
 
     /**
      * Data, represented in a json object string, to send along with the message.
