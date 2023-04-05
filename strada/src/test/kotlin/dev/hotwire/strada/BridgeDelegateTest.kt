@@ -19,7 +19,7 @@ class BridgeDelegateTest {
 
     @Before
     fun setup() {
-        delegate = AppBridgeDelegate(
+        delegate = BridgeDelegate(
             destination = AppBridgeDestination(),
             componentFactories = factories
         )
@@ -80,11 +80,6 @@ class BridgeDelegateTest {
         assertNull(delegate.bridge?.delegate)
         assertNull(delegate.bridge)
     }
-
-    private class AppBridgeDelegate(
-        destination: AppBridgeDestination,
-        componentFactories: List<BridgeComponentFactory<AppBridgeDestination, AppBridgeComponent>>,
-    ) : BridgeDelegate<AppBridgeDestination>(destination, componentFactories)
 
     class AppBridgeDestination : BridgeDestination {
         override fun destinationLocation() = "https://37signals.com"

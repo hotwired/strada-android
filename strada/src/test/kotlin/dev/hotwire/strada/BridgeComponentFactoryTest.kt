@@ -13,7 +13,7 @@ class BridgeComponentFactoryTest {
             BridgeComponentFactory("two", ::TwoBridgeComponent)
         )
 
-        val delegate = AppBridgeDelegate(
+        val delegate = BridgeDelegate(
             destination = AppBridgeDestination(),
             componentFactories = factories
         )
@@ -26,11 +26,6 @@ class BridgeComponentFactoryTest {
         assertEquals("two", componentTwo.name)
         assertTrue(componentTwo is TwoBridgeComponent)
     }
-
-    private class AppBridgeDelegate(
-        destination: AppBridgeDestination,
-        componentFactories: List<BridgeComponentFactory<AppBridgeDestination, AppBridgeComponent>>,
-    ) : BridgeDelegate<AppBridgeDestination>(destination, componentFactories)
 
     class AppBridgeDestination : BridgeDestination {
         override fun destinationLocation() = "https://37signals.com"

@@ -3,15 +3,15 @@ package dev.hotwire.strada
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 
-abstract class BridgeDelegate<D : BridgeDestination>(
+class BridgeDelegate<D : BridgeDestination>(
     val destination: D,
     private val componentFactories: List<BridgeComponentFactory<D, BridgeComponent<D>>>
 ) {
     internal var bridge: Bridge? = null
     private var destinationIsActive = true
-
     private val components = hashMapOf<String, BridgeComponent<D>>()
-    protected val activeComponents: List<BridgeComponent<D>>
+
+    val activeComponents: List<BridgeComponent<D>>
         get() = when (destinationIsActive) {
             true -> components.map { it.value }
             else -> emptyList()
@@ -82,12 +82,12 @@ abstract class BridgeDelegate<D : BridgeDestination>(
 
     // Retrieve an individual component
 
-    fun <T : BridgeComponent<D>> component(clazz: Class<T>): T? {
-        return activeComponents.filterIsInstance(clazz).firstOrNull()
+    inline fun <reified C> component(): C? {
+        return activeComponents.filterIsInstance<C>().firstOrNull()
     }
 
-    private fun component(name: String): BridgeComponent<D>? {
-        return activeComponents.firstOrNull { it.name == name }
+    inline fun <reified C> forEachComponent(action: (C) -> Unit) {
+        activeComponents.filterIsInstance<C>().forEach { action(it) }
     }
 
     private fun getOrCreateComponent(name: String): BridgeComponent<D>? {
