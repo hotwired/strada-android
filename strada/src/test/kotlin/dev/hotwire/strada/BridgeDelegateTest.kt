@@ -46,7 +46,31 @@ class BridgeDelegateTest {
         verify(bridge).register(eq(listOf("one", "two")))
     }
 
-    // TODO test bridgeDidReceiveMessage()
+    @Test
+    fun bridgeDidReceiveMessage() {
+        val message = Message(
+            id = "1",
+            component = "page",
+            event = "connect",
+            metadata = Metadata("https://37signals.com"),
+            jsonData = """{"title":"Page-title","subtitle":"Page-subtitle"}"""
+        )
+
+        assertEquals(true, delegate.bridgeDidReceiveMessage(message))
+    }
+
+    @Test
+    fun bridgeDidReceiveMessageIgnored() {
+        val message = Message(
+            id = "1",
+            component = "page",
+            event = "connect",
+            metadata = Metadata("https://37signals.com/another_url"),
+            jsonData = """{"title":"Page-title","subtitle":"Page-subtitle"}"""
+        )
+
+        assertEquals(false, delegate.bridgeDidReceiveMessage(message))
+    }
 
     @Test
     fun onWebViewAttached() {

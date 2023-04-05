@@ -3,6 +3,7 @@ package dev.hotwire.strada
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 
+@Suppress("unused")
 class BridgeDelegate<D : BridgeDestination>(
     val destination: D,
     private val componentFactories: List<BridgeComponentFactory<D, BridgeComponent<D>>>
@@ -47,12 +48,14 @@ class BridgeDelegate<D : BridgeDestination>(
         bridge?.register(componentFactories.map { it.name })
     }
 
-    internal fun bridgeDidReceiveMessage(message: Message) {
-        if (destination.destinationLocation() == message.metadata?.url) {
+    internal fun bridgeDidReceiveMessage(message: Message): Boolean {
+        return if (destination.destinationLocation() == message.metadata?.url) {
             logMessage("bridgeDidReceiveMessage", message)
             getOrCreateComponent(message.component)?.handle(message)
+            true
         } else {
             logMessage("bridgeDidIgnoreMessage", message)
+            false
         }
     }
 
@@ -80,7 +83,7 @@ class BridgeDelegate<D : BridgeDestination>(
         activeComponents.forEach { it.onStop() }
     }
 
-    // Retrieve an individual component
+    // Retrieve component(s) by type
 
     inline fun <reified C> component(): C? {
         return activeComponents.filterIsInstance<C>().firstOrNull()

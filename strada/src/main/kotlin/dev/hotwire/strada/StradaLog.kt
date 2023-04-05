@@ -2,6 +2,7 @@ package dev.hotwire.strada
 
 import android.util.Log
 
+@Suppress("unused")
 object StradaLog {
     private const val DEFAULT_TAG = "StradaLog"
     private var enableDebugLogging = false

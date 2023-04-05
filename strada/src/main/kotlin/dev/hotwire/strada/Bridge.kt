@@ -9,7 +9,7 @@ private const val bridgeGlobal = "window.nativeBridge"
 private const val bridgeJavascriptInterface = "Strada"
 
 @Suppress("unused")
-class Bridge(val webView: WebView) {
+class Bridge(private val webView: WebView) {
     internal var repository = Repository()
     private var componentsAreRegistered: Boolean = false
 
