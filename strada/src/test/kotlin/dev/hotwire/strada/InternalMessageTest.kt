@@ -9,6 +9,7 @@ import org.junit.Test
 class InternalMessageTest {
     @Serializable
     private data class Page(
+        @SerialName("metadata") val metadata: InternalMetadata,
         @SerialName("title") val title: String,
         @SerialName("subtitle") val subtitle: String,
         @SerialName("actions") val actions: List<String>
@@ -19,6 +20,9 @@ class InternalMessageTest {
         "component":"page",
         "event":"connect",
         "data":{
+            "metadata":{
+                "url":"https://37signals.com"
+            },
             "title":"Page-title",
             "subtitle":"Page-subtitle",
             "actions": [
@@ -31,7 +35,7 @@ class InternalMessageTest {
 
     @Test
     fun toMessage() {
-        val messageJsonData = """{"title":"Page-title","subtitle":"Page-subtitle","actions":["one","two","three"]}"""
+        val messageJsonData = """{"metadata":{"url":"https://37signals.com"},"title":"Page-title","subtitle":"Page-subtitle","actions":["one","two","three"]}"""
         val message = InternalMessage(
             id = "1",
             component = "page",
@@ -42,6 +46,7 @@ class InternalMessageTest {
         assertEquals("1", message.id)
         assertEquals("page", message.component)
         assertEquals("connect", message.event)
+        assertEquals("https://37signals.com", message.metadata?.url)
         assertEquals(messageJsonData, message.jsonData)
     }
 
@@ -74,7 +79,7 @@ class InternalMessageTest {
 
     @Test
     fun fromJsonNoData() {
-        val noDataJson = """{"id":"1","component":"page","event":"connect"}"""
+        val noDataJson = """{"id":"1","component":"page","event":"connect","metadata":{"url":"https://37signals.com"}}"""
         val message = InternalMessage.fromJson(noDataJson)
 
         assertEquals("1", message?.id)
@@ -83,6 +88,7 @@ class InternalMessageTest {
 
     private fun createPage(): Page {
         return Page(
+            metadata = InternalMetadata(url = "https://37signals.com"),
             title = "Page-title",
             subtitle = "Page-subtitle",
             actions = listOf("one", "two", "three")

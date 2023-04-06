@@ -18,6 +18,11 @@ data class Message(
     val event: String,
 
     /**
+     * The metadata associated with the message, which includes its url
+     */
+    val metadata: Metadata?,
+
+    /**
      * Data, represented in a json object string, to send along with the message.
      * For a "page" component, this might be `{"title": "Page Title"}`
      */
@@ -35,6 +40,11 @@ data class Message(
         id = this.id,
         component = this.component,
         event = event,
+        metadata = this.metadata,
         jsonData = jsonData
     )
 }
+
+data class Metadata(
+    val url: String
+)

@@ -2,6 +2,8 @@ package dev.hotwire.strada
 
 import android.content.Context
 import android.webkit.WebView
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.testing.TestLifecycleOwner
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
@@ -16,7 +18,7 @@ class BridgeTest {
     private val webView: WebView = mock()
     private val context: Context = mock()
     private val repository: Repository = mock()
-    private val delegate: BridgeDelegate = mock()
+    private val delegate: BridgeDelegate<AppBridgeDestination> = mock()
 
     @Before
     fun setup() {
@@ -54,6 +56,7 @@ class BridgeTest {
             id = "1",
             component = "page",
             event = "connect",
+            metadata = Metadata("https://37signals.com"),
             jsonData = data
         )
 
@@ -79,12 +82,13 @@ class BridgeTest {
 
     @Test
     fun bridgeDidReceiveMessage() {
-        val json = """{"id":"1","component":"page","event":"connect","data":{"title":"Page title","subtitle":"Page subtitle"}}"""
-        val data = """{"title":"Page title","subtitle":"Page subtitle"}"""
+        val json = """{"id":"1","component":"page","event":"connect","data":{"metadata":{"url":"https://37signals.com"},"title":"Page title","subtitle":"Page subtitle"}}"""
+        val data = """{"metadata":{"url":"https://37signals.com"},"title":"Page title","subtitle":"Page subtitle"}"""
         val message = Message(
             id = "1",
             component = "page",
             event = "connect",
+            metadata = Metadata("https://37signals.com"),
             jsonData = data
         )
 
@@ -130,5 +134,11 @@ class BridgeTest {
     @Test
     fun sanitizeFunctionName() {
         assertEquals(bridge.sanitizeFunctionName("send()"), "send")
+    }
+
+    class AppBridgeDestination : BridgeDestination {
+        override fun bridgeDestinationLocation() = "https://37signals.com"
+        override fun bridgeDestinationLifecycleOwner() = TestLifecycleOwner()
+        override fun bridgeWebViewIsReady() = true
     }
 }
