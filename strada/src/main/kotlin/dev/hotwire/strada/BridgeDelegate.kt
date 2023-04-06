@@ -41,7 +41,7 @@ class BridgeDelegate<D : BridgeDestination>(
                 loadBridgeInWebView()
             }
         } else {
-            logEvent("bridgeNotInitializedForWebView", destination.destinationLocation())
+            logEvent("bridgeNotInitializedForWebView", destination.bridgeDestinationLocation())
         }
     }
 
@@ -55,7 +55,7 @@ class BridgeDelegate<D : BridgeDestination>(
     }
 
     internal fun bridgeDidReceiveMessage(message: Message): Boolean {
-        return if (destination.destinationLocation() == message.metadata?.url) {
+        return if (destination.bridgeDestinationLocation() == message.metadata?.url) {
             logMessage("bridgeDidReceiveMessage", message)
             getOrCreateComponent(message.component)?.handle(message)
             true
@@ -66,13 +66,13 @@ class BridgeDelegate<D : BridgeDestination>(
     }
 
     private fun shouldReloadBridge(): Boolean {
-        return destination.webViewIsReady() && bridge?.isReady() == false
+        return destination.bridgeWebViewIsReady() && bridge?.isReady() == false
     }
 
     // Lifecycle events
 
     private fun observeLifeCycle() {
-        destination.destinationLifecycleOwner().lifecycle.addObserver(object :
+        destination.bridgeDestinationLifecycleOwner().lifecycle.addObserver(object :
             DefaultLifecycleObserver {
             override fun onStart(owner: LifecycleOwner) { onStart() }
             override fun onStop(owner: LifecycleOwner) { onStop() }
@@ -100,16 +100,7 @@ class BridgeDelegate<D : BridgeDestination>(
     }
 
     private fun getOrCreateComponent(name: String): BridgeComponent<D>? {
-        components[name]?.let { return it }
-
-        val factory = componentFactories.firstOrNull { it.name == name }
-
-        return if (factory != null) {
-            val component = factory.create(this)
-            components[name] = component
-            component
-        } else {
-            null
-        }
+        val factory = componentFactories.firstOrNull { it.name == name } ?: return null
+        return components.getOrPut(name) { factory.create(this) }
     }
 }

@@ -1,11 +1,13 @@
 package dev.hotwire.strada
 
 import android.webkit.WebView
-import androidx.core.view.get
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.testing.TestLifecycleOwner
-import com.nhaarman.mockito_kotlin.*
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
+import com.nhaarman.mockito_kotlin.eq
+import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.never
+import com.nhaarman.mockito_kotlin.whenever
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.verify
@@ -54,13 +56,15 @@ class BridgeDelegateTest {
     fun bridgeDidReceiveMessage() {
         val message = Message(
             id = "1",
-            component = "page",
+            component = "one",
             event = "connect",
             metadata = Metadata("https://37signals.com"),
             jsonData = """{"title":"Page-title","subtitle":"Page-subtitle"}"""
         )
 
+        assertNull(delegate.component<OneBridgeComponent>())
         assertEquals(true, delegate.bridgeDidReceiveMessage(message))
+        assertNotNull(delegate.component<OneBridgeComponent>())
     }
 
     @Test
@@ -109,9 +113,9 @@ class BridgeDelegateTest {
     }
 
     class AppBridgeDestination : BridgeDestination {
-        override fun destinationLocation() = "https://37signals.com"
-        override fun destinationLifecycleOwner() = TestLifecycleOwner()
-        override fun webViewIsReady() = true
+        override fun bridgeDestinationLocation() = "https://37signals.com"
+        override fun bridgeDestinationLifecycleOwner() = TestLifecycleOwner(Lifecycle.State.STARTED)
+        override fun bridgeWebViewIsReady() = true
     }
 
     private abstract class AppBridgeComponent(
