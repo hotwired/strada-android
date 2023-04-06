@@ -94,16 +94,7 @@ class BridgeDelegate<D : BridgeDestination>(
     }
 
     private fun getOrCreateComponent(name: String): BridgeComponent<D>? {
-        components[name]?.let { return it }
-
-        val factory = componentFactories.firstOrNull { it.name == name }
-
-        return if (factory != null) {
-            val component = factory.create(this)
-            components[name] = component
-            component
-        } else {
-            null
-        }
+        val factory = componentFactories.firstOrNull { it.name == name } ?: return null
+        return components.getOrPut(name) { factory.create(this) }
     }
 }

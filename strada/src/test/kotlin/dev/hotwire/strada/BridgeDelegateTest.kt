@@ -1,9 +1,9 @@
 package dev.hotwire.strada
 
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.testing.TestLifecycleOwner
 import com.nhaarman.mockito_kotlin.*
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.verify
@@ -50,13 +50,15 @@ class BridgeDelegateTest {
     fun bridgeDidReceiveMessage() {
         val message = Message(
             id = "1",
-            component = "page",
+            component = "one",
             event = "connect",
             metadata = Metadata("https://37signals.com"),
             jsonData = """{"title":"Page-title","subtitle":"Page-subtitle"}"""
         )
 
+        assertNull(delegate.component<OneBridgeComponent>())
         assertEquals(true, delegate.bridgeDidReceiveMessage(message))
+        assertNotNull(delegate.component<OneBridgeComponent>())
     }
 
     @Test
@@ -107,7 +109,7 @@ class BridgeDelegateTest {
 
     class AppBridgeDestination : BridgeDestination {
         override fun destinationLocation() = "https://37signals.com"
-        override fun destinationLifecycleOwner() = TestLifecycleOwner()
+        override fun destinationLifecycleOwner() = TestLifecycleOwner(Lifecycle.State.STARTED)
         override fun webViewIsReady() = true
     }
 
