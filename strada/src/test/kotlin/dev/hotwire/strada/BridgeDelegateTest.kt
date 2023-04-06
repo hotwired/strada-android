@@ -1,8 +1,12 @@
 package dev.hotwire.strada
 
+import android.webkit.WebView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.testing.TestLifecycleOwner
-import com.nhaarman.mockito_kotlin.*
+import com.nhaarman.mockito_kotlin.eq
+import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.never
+import com.nhaarman.mockito_kotlin.whenever
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -11,6 +15,7 @@ import org.mockito.Mockito.verify
 class BridgeDelegateTest {
     private lateinit var delegate: BridgeDelegate<AppBridgeDestination>
     private val bridge: Bridge = mock()
+    private val webView: WebView = mock()
 
     private val factories = listOf(
         BridgeComponentFactory("one", ::OneBridgeComponent),
@@ -19,29 +24,30 @@ class BridgeDelegateTest {
 
     @Before
     fun setup() {
+        whenever(bridge.webView).thenReturn(webView)
+        Bridge.initialize(bridge)
+
         delegate = BridgeDelegate(
             destination = AppBridgeDestination(),
             componentFactories = factories
         )
+        delegate.bridge = bridge
     }
 
     @Test
     fun loadBridgeInWebView() {
-        delegate.onWebViewAttached(bridge)
         delegate.loadBridgeInWebView()
-        verify(bridge, times(2)).load()
+        verify(bridge).load()
     }
 
     @Test
     fun resetBridge() {
-        delegate.onWebViewAttached(bridge)
         delegate.resetBridge()
         verify(bridge).reset()
     }
 
     @Test
     fun bridgeDidInitialize() {
-        delegate.onWebViewAttached(bridge)
         delegate.bridgeDidInitialize()
         verify(bridge).register(eq(listOf("one", "two")))
     }
@@ -77,7 +83,7 @@ class BridgeDelegateTest {
     @Test
     fun onWebViewAttached() {
         whenever(bridge.isReady()).thenReturn(false)
-        delegate.onWebViewAttached(bridge)
+        delegate.onWebViewAttached(webView)
 
         assertEquals(delegate.bridge, bridge)
     }
@@ -85,7 +91,7 @@ class BridgeDelegateTest {
     @Test
     fun onWebViewAttachedShouldLoad() {
         whenever(bridge.isReady()).thenReturn(false)
-        delegate.onWebViewAttached(bridge)
+        delegate.onWebViewAttached(webView)
 
         verify(bridge).load()
     }
@@ -93,14 +99,13 @@ class BridgeDelegateTest {
     @Test
     fun onWebViewAttachedShouldNotLoad() {
         whenever(bridge.isReady()).thenReturn(true)
-        delegate.onWebViewAttached(bridge)
+        delegate.onWebViewAttached(webView)
 
         verify(bridge, never()).load()
     }
 
     @Test
     fun onWebViewDetached() {
-        delegate.onWebViewAttached(bridge)
         delegate.onWebViewDetached()
 
         assertNull(delegate.bridge?.delegate)
