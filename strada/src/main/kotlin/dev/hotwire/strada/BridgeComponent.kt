@@ -7,7 +7,9 @@ abstract class BridgeComponent<in D : BridgeDestination>(
     abstract fun handle(message: Message)
 
     fun send(message: Message) {
-        delegate.bridge?.send(message)
+        delegate.bridge?.send(message) ?: run {
+            logEvent("bridgeMessageFailedToSend", "bridge is not available")
+        }
     }
 
     open fun onStart() {}
