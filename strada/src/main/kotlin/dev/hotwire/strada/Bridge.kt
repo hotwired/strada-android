@@ -2,66 +2,74 @@ package dev.hotwire.strada
 
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
+import androidx.annotation.VisibleForTesting
 import kotlinx.serialization.json.JsonElement
+import java.lang.ref.WeakReference
 
 // These need to match whatever is set in strada.js
 private const val bridgeGlobal = "window.nativeBridge"
 private const val bridgeJavascriptInterface = "Strada"
 
 @Suppress("unused")
-class Bridge(private val webView: WebView) {
-    internal var repository = Repository()
+class Bridge internal constructor(webView: WebView) {
     private var componentsAreRegistered: Boolean = false
+    private val webViewRef: WeakReference<WebView>
 
-    var delegate: BridgeDelegate<*>? = null
+    internal val webView: WebView? get() = webViewRef.get()
+    internal var repository = Repository()
+    internal var delegate: BridgeDelegate<*>? = null
 
     init {
+        // Use a weak reference in case the WebView is no longer being
+        // used by the app, such as when the render process is gone.
+        webViewRef = WeakReference(webView)
+
         // The JavascriptInterface must be added before the page is loaded
         webView.addJavascriptInterface(this, bridgeJavascriptInterface)
     }
 
-    fun register(component: String) {
+    internal fun register(component: String) {
         logEvent("bridgeWillRegisterComponent", component)
         val javascript = generateJavaScript("register", component.toJsonElement())
         evaluate(javascript)
     }
 
-    fun register(components: List<String>) {
+    internal fun register(components: List<String>) {
         logEvent("bridgeWillRegisterComponents", components.joinToString())
         val javascript = generateJavaScript("register", components.toJsonElement())
         evaluate(javascript)
     }
 
-    fun unregister(component: String) {
+    internal fun unregister(component: String) {
         logEvent("bridgeWillUnregisterComponent", component)
         val javascript = generateJavaScript("unregister", component.toJsonElement())
         evaluate(javascript)
     }
 
-    fun send(message: Message) {
+    internal fun send(message: Message) {
         logMessage("bridgeWillSendMessage", message)
         val internalMessage = InternalMessage.fromMessage(message)
         val javascript = generateJavaScript("send", internalMessage.toJson().toJsonElement())
         evaluate(javascript)
     }
 
-    fun load() {
+    internal fun load() {
         logEvent("bridgeWillLoad")
         evaluate(userScript())
     }
 
-    fun reset() {
+    internal fun reset() {
         logEvent("bridgeDidReset")
         componentsAreRegistered = false
     }
 
-    fun isReady(): Boolean {
+    internal fun isReady(): Boolean {
         return componentsAreRegistered
     }
 
     @JavascriptInterface
     fun bridgeDidInitialize() {
-        logEvent("bridgeDidInitialize")
+        logEvent("bridgeDidInitialize", "success")
         runOnUiThread {
             delegate?.bridgeDidInitialize()
         }
@@ -69,7 +77,7 @@ class Bridge(private val webView: WebView) {
 
     @JavascriptInterface
     fun bridgeDidUpdateSupportedComponents() {
-        logEvent("bridgeDidUpdateSupportedComponents")
+        logEvent("bridgeDidUpdateSupportedComponents", "success")
         componentsAreRegistered = true
     }
 
@@ -85,12 +93,13 @@ class Bridge(private val webView: WebView) {
     // Internal
 
     internal fun userScript(): String {
-        return repository.getUserScript(webView.context)
+        val context = requireNotNull(webView?.context)
+        return repository.getUserScript(context)
     }
 
     internal fun evaluate(javascript: String) {
         logEvent("evaluatingJavascript", javascript)
-        webView.evaluateJavascript(javascript) {}
+        webView?.evaluateJavascript(javascript) {}
     }
 
     internal fun generateJavaScript(bridgeFunction: String, vararg arguments: JsonElement): String {
@@ -105,5 +114,25 @@ class Bridge(private val webView: WebView) {
 
     internal fun sanitizeFunctionName(name: String): String {
         return name.removeSuffix("()")
+    }
+
+    companion object {
+        private val instances = mutableListOf<Bridge>()
+
+        fun initialize(webView: WebView) {
+            if (getBridgeFor(webView) == null) {
+                initialize(Bridge(webView))
+            }
+        }
+
+        @VisibleForTesting
+        internal fun initialize(bridge: Bridge) {
+            instances.add(bridge)
+            instances.removeIf { it.webView == null }
+        }
+
+        internal fun getBridgeFor(webView: WebView): Bridge? {
+            return instances.firstOrNull { it.webView == webView }
+        }
     }
 }

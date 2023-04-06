@@ -1,5 +1,6 @@
 package dev.hotwire.strada
 
+import android.webkit.WebView
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 
@@ -30,12 +31,17 @@ class BridgeDelegate<D : BridgeDestination>(
         bridge?.reset()
     }
 
-    fun onWebViewAttached(bridge: Bridge?) {
-        this.bridge = bridge
-        this.bridge?.delegate = this
+    fun onWebViewAttached(webView: WebView) {
+        bridge = Bridge.getBridgeFor(webView)?.apply {
+            delegate = this@BridgeDelegate
+        }
 
-        if (shouldReloadBridge()) {
-            loadBridgeInWebView()
+        if (bridge != null) {
+            if (shouldReloadBridge()) {
+                loadBridgeInWebView()
+            }
+        } else {
+            logEvent("bridgeNotInitializedForWebView", destination.destinationLocation())
         }
     }
 
