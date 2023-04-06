@@ -35,14 +35,14 @@ class BridgeDelegateTest {
     }
 
     @Test
-    fun loadBridgeInWebView() {
-        delegate.loadBridgeInWebView()
+    fun onColdBootPageCompleted() {
+        delegate.onColdBootPageCompleted()
         verify(bridge).load()
     }
 
     @Test
-    fun resetBridge() {
-        delegate.resetBridge()
+    fun onColdBootPageStarted() {
+        delegate.onColdBootPageStarted()
         verify(bridge).reset()
     }
 

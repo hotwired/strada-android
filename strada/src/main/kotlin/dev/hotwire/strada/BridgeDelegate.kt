@@ -23,11 +23,11 @@ class BridgeDelegate<D : BridgeDestination>(
         observeLifeCycle()
     }
 
-    fun loadBridgeInWebView() {
+    fun onColdBootPageCompleted() {
         bridge?.load()
     }
 
-    fun resetBridge() {
+    fun onColdBootPageStarted() {
         bridge?.reset()
     }
 
@@ -38,7 +38,7 @@ class BridgeDelegate<D : BridgeDestination>(
 
         if (bridge != null) {
             if (shouldReloadBridge()) {
-                loadBridgeInWebView()
+                bridge?.load()
             }
         } else {
             logEvent("bridgeNotInitializedForWebView", destination.bridgeDestinationLocation())
