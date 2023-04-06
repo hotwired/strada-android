@@ -108,9 +108,9 @@ class BridgeDelegateTest {
     }
 
     class AppBridgeDestination : BridgeDestination {
-        override fun destinationLocation() = "https://37signals.com"
-        override fun destinationLifecycleOwner() = TestLifecycleOwner(Lifecycle.State.STARTED)
-        override fun webViewIsReady() = true
+        override fun bridgeDestinationLocation() = "https://37signals.com"
+        override fun bridgeDestinationLifecycleOwner() = TestLifecycleOwner(Lifecycle.State.STARTED)
+        override fun bridgeWebViewIsReady() = true
     }
 
     private abstract class AppBridgeComponent(

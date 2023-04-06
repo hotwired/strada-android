@@ -49,7 +49,7 @@ class BridgeDelegate<D : BridgeDestination>(
     }
 
     internal fun bridgeDidReceiveMessage(message: Message): Boolean {
-        return if (destination.destinationLocation() == message.metadata?.url) {
+        return if (destination.bridgeDestinationLocation() == message.metadata?.url) {
             logMessage("bridgeDidReceiveMessage", message)
             getOrCreateComponent(message.component)?.handle(message)
             true
@@ -60,13 +60,13 @@ class BridgeDelegate<D : BridgeDestination>(
     }
 
     private fun shouldReloadBridge(): Boolean {
-        return destination.webViewIsReady() && bridge?.isReady() == false
+        return destination.bridgeWebViewIsReady() && bridge?.isReady() == false
     }
 
     // Lifecycle events
 
     private fun observeLifeCycle() {
-        destination.destinationLifecycleOwner().lifecycle.addObserver(object :
+        destination.bridgeDestinationLifecycleOwner().lifecycle.addObserver(object :
             DefaultLifecycleObserver {
             override fun onStart(owner: LifecycleOwner) { onStart() }
             override fun onStop(owner: LifecycleOwner) { onStop() }
