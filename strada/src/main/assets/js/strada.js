@@ -32,18 +32,18 @@
     registerAdapter() {
       this.adapterIsRegistered = true
 
-      if (window.webBridge) {
-        window.webBridge.setAdapter(this)
+      if (this.isStradaAvailable) {
+        this.webBridge.setAdapter(this)
       } else {
-        document.addEventListener("web-bridge:ready", () => window.webBridge.setAdapter(this))
+        document.addEventListener("web-bridge:ready", () => this.webBridge.setAdapter(this))
       }
     }
 
     notifyBridgeOfSupportedComponentsUpdate() {
       this.supportedComponentsUpdated()
 
-      if (window.webBridge) {
-        window.webBridge.adapterDidUpdateSupportedComponents()
+      if (this.isStradaAvailable) {
+        this.webBridge.adapterDidUpdateSupportedComponents()
       }
     }
 
@@ -53,8 +53,8 @@
 
     // Send message to web
     send(message) {
-      if (window.webBridge) {
-        window.webBridge.receive(JSON.parse(message))
+      if (this.isStradaAvailable) {
+        this.webBridge.receive(JSON.parse(message))
       }
     }
 
@@ -70,15 +70,25 @@
     // Native handler
 
     ready() {
-      Strada.bridgeDidInitialize()
+      StradaNative.bridgeDidInitialize()
     }
 
     supportedComponentsUpdated() {
-      Strada.bridgeDidUpdateSupportedComponents()
+      StradaNative.bridgeDidUpdateSupportedComponents()
     }
 
     postMessage(message) {
-      Strada.bridgeDidReceiveMessage(message)
+      StradaNative.bridgeDidReceiveMessage(message)
+    }
+
+    // Web global
+
+    get isStradaAvailable() {
+      return window.Strada
+    }
+
+    get webBridge() {
+      return window.Strada.web
     }
   }
 

@@ -8,7 +8,7 @@ import java.lang.ref.WeakReference
 
 // These need to match whatever is set in strada.js
 private const val bridgeGlobal = "window.nativeBridge"
-private const val bridgeJavascriptInterface = "Strada"
+private const val bridgeJavascriptInterface = "StradaNative"
 
 @Suppress("unused")
 class Bridge internal constructor(webView: WebView) {
