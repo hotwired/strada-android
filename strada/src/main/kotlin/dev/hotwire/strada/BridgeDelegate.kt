@@ -19,10 +19,7 @@ class BridgeDelegate<D : BridgeDestination>(
         get() = initializedComponents.map { it.value }
 
     val activeComponents: List<BridgeComponent<D>>
-        get() = when (destinationIsActive) {
-            true -> allComponents
-            else -> emptyList()
-        }
+        get() = allComponents.takeIf { destinationIsActive } ?: emptyList()
 
     init {
         observeLifeCycle()
