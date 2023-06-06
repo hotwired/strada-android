@@ -2,6 +2,7 @@ package dev.hotwire.strada
 
 import android.webkit.WebView
 import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 
 @Suppress("unused")
@@ -10,14 +11,15 @@ class BridgeDelegate<D : BridgeDestination>(
     private val componentFactories: List<BridgeComponentFactory<D, BridgeComponent<D>>>
 ) {
     internal var bridge: Bridge? = null
-    private var destinationIsActive = true
-    private val components = hashMapOf<String, BridgeComponent<D>>()
+    private val initializedComponents = hashMapOf<String, BridgeComponent<D>>()
+    private val lifecycle get() = destination.bridgeDestinationLifecycleOwner().lifecycle
+    private val destinationIsActive get() = lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
+
+    private val allComponents: List<BridgeComponent<D>>
+        get() = initializedComponents.map { it.value }
 
     val activeComponents: List<BridgeComponent<D>>
-        get() = when (destinationIsActive) {
-            true -> components.map { it.value }
-            else -> emptyList()
-        }
+        get() = allComponents.takeIf { destinationIsActive } ?: emptyList()
 
     init {
         observeLifeCycle()
@@ -55,7 +57,7 @@ class BridgeDelegate<D : BridgeDestination>(
     }
 
     internal fun bridgeDidReceiveMessage(message: Message): Boolean {
-        return if (destination.bridgeDestinationLocation() == message.metadata?.url) {
+        return if (destinationIsActive && destination.bridgeDestinationLocation() == message.metadata?.url) {
             logMessage("bridgeDidReceiveMessage", message)
             getOrCreateComponent(message.component)?.handle(message)
             true
@@ -80,13 +82,11 @@ class BridgeDelegate<D : BridgeDestination>(
     }
 
     private fun onStart() {
-        destinationIsActive = true
         activeComponents.forEach { it.onStart() }
     }
 
     private fun onStop() {
-        destinationIsActive = false
-        activeComponents.forEach { it.onStop() }
+        allComponents.forEach { it.onStop() }
     }
 
     // Retrieve component(s) by type
@@ -101,6 +101,6 @@ class BridgeDelegate<D : BridgeDestination>(
 
     private fun getOrCreateComponent(name: String): BridgeComponent<D>? {
         val factory = componentFactories.firstOrNull { it.name == name } ?: return null
-        return components.getOrPut(name) { factory.create(this) }
+        return initializedComponents.getOrPut(name) { factory.create(this) }
     }
 }
