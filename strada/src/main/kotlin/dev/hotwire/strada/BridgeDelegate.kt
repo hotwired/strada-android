@@ -12,8 +12,10 @@ class BridgeDelegate<D : BridgeDestination>(
 ) {
     internal var bridge: Bridge? = null
     private val initializedComponents = hashMapOf<String, BridgeComponent<D>>()
-    private val lifecycle get() = destination.bridgeDestinationLifecycleOwner().lifecycle
-    private val destinationIsActive get() = lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
+    private val lifecycle
+        get() = destination.bridgeDestinationLifecycleOwner()?.lifecycle
+    private val destinationIsActive
+        get() = lifecycle?.currentState?.isAtLeast(Lifecycle.State.STARTED) ?: false
 
     private val allComponents: List<BridgeComponent<D>>
         get() = initializedComponents.map { it.value }
@@ -74,10 +76,15 @@ class BridgeDelegate<D : BridgeDestination>(
     // Lifecycle events
 
     private fun observeLifeCycle() {
-        destination.bridgeDestinationLifecycleOwner().lifecycle.addObserver(object :
+        destination.bridgeDestinationLifecycleOwner()?.lifecycle?.addObserver(object :
             DefaultLifecycleObserver {
-            override fun onStart(owner: LifecycleOwner) { onStart() }
-            override fun onStop(owner: LifecycleOwner) { onStop() }
+            override fun onStart(owner: LifecycleOwner) {
+                onStart()
+            }
+
+            override fun onStop(owner: LifecycleOwner) {
+                onStop()
+            }
         })
     }
 
