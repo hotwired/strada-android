@@ -9,11 +9,13 @@ import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.whenever
 import org.junit.Assert.*
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito.verify
 
 class BridgeDelegateTest {
     private lateinit var delegate: BridgeDelegate<AppBridgeDestination>
+    private lateinit var lifecycleOwner: TestLifecycleOwner
     private val bridge: Bridge = mock()
     private val webView: WebView = mock()
 
@@ -22,16 +24,24 @@ class BridgeDelegateTest {
         BridgeComponentFactory("two", ::TwoBridgeComponent)
     )
 
+    @Rule
+    @JvmField
+    var coroutinesTestRule = CoroutinesTestRule()
+
     @Before
     fun setup() {
         whenever(bridge.webView).thenReturn(webView)
         Bridge.initialize(bridge)
 
         delegate = BridgeDelegate(
+            location = "https://37signals.com",
             destination = AppBridgeDestination(),
             componentFactories = factories
         )
         delegate.bridge = bridge
+
+        lifecycleOwner = TestLifecycleOwner(Lifecycle.State.STARTED)
+        lifecycleOwner.lifecycle.addObserver(delegate)
     }
 
     @Test
@@ -112,9 +122,25 @@ class BridgeDelegateTest {
         assertNull(delegate.bridge)
     }
 
+    @Test
+    fun destinationIsInactive() {
+        val message = Message(
+            id = "1",
+            component = "one",
+            event = "connect",
+            metadata = Metadata("https://37signals.com"),
+            jsonData = """{"title":"Page-title","subtitle":"Page-subtitle"}"""
+        )
+
+        assertEquals(true, delegate.bridgeDidReceiveMessage(message))
+        assertNotNull(delegate.component<OneBridgeComponent>())
+
+        lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
+        assertEquals(false, delegate.bridgeDidReceiveMessage(message))
+        assertNull(delegate.component<OneBridgeComponent>())
+    }
+
     class AppBridgeDestination : BridgeDestination {
-        override fun bridgeDestinationLocation() = "https://37signals.com"
-        override fun bridgeDestinationLifecycleOwner() = TestLifecycleOwner(Lifecycle.State.STARTED)
         override fun bridgeWebViewIsReady() = true
     }
 

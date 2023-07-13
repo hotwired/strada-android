@@ -2,8 +2,6 @@ package dev.hotwire.strada
 
 import android.content.Context
 import android.webkit.WebView
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.testing.TestLifecycleOwner
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
@@ -137,8 +135,6 @@ class BridgeTest {
     }
 
     class AppBridgeDestination : BridgeDestination {
-        override fun bridgeDestinationLocation() = "https://37signals.com"
-        override fun bridgeDestinationLifecycleOwner() = TestLifecycleOwner()
         override fun bridgeWebViewIsReady() = true
     }
 }

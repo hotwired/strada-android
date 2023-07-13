@@ -2,28 +2,20 @@ package dev.hotwire.strada
 
 import android.webkit.WebView
 import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 
 @Suppress("unused")
 class BridgeDelegate<D : BridgeDestination>(
+    val location: String,
     val destination: D,
     private val componentFactories: List<BridgeComponentFactory<D, BridgeComponent<D>>>
-) {
+) : DefaultLifecycleObserver {
     internal var bridge: Bridge? = null
+    private var destinationIsActive: Boolean = false
     private val initializedComponents = hashMapOf<String, BridgeComponent<D>>()
-    private val lifecycle get() = destination.bridgeDestinationLifecycleOwner().lifecycle
-    private val destinationIsActive get() = lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
-
-    private val allComponents: List<BridgeComponent<D>>
-        get() = initializedComponents.map { it.value }
 
     val activeComponents: List<BridgeComponent<D>>
-        get() = allComponents.takeIf { destinationIsActive } ?: emptyList()
-
-    init {
-        observeLifeCycle()
-    }
+        get() = initializedComponents.map { it.value }.takeIf { destinationIsActive }.orEmpty()
 
     fun onColdBootPageCompleted() {
         bridge?.load()
@@ -43,7 +35,7 @@ class BridgeDelegate<D : BridgeDestination>(
                 bridge?.load()
             }
         } else {
-            logEvent("bridgeNotInitializedForWebView", destination.bridgeDestinationLocation())
+            logEvent("bridgeNotInitializedForWebView", location)
         }
     }
 
@@ -57,7 +49,7 @@ class BridgeDelegate<D : BridgeDestination>(
     }
 
     internal fun bridgeDidReceiveMessage(message: Message): Boolean {
-        return if (destinationIsActive && destination.bridgeDestinationLocation() == message.metadata?.url) {
+        return if (destinationIsActive && location == message.metadata?.url) {
             logMessage("bridgeDidReceiveMessage", message)
             getOrCreateComponent(message.component)?.handle(message)
             true
@@ -73,20 +65,21 @@ class BridgeDelegate<D : BridgeDestination>(
 
     // Lifecycle events
 
-    private fun observeLifeCycle() {
-        destination.bridgeDestinationLifecycleOwner().lifecycle.addObserver(object :
-            DefaultLifecycleObserver {
-            override fun onStart(owner: LifecycleOwner) { onStart() }
-            override fun onStop(owner: LifecycleOwner) { onStop() }
-        })
-    }
-
-    private fun onStart() {
+    override fun onStart(owner: LifecycleOwner) {
+        logEvent("bridgeDestinationDidStart", location)
+        destinationIsActive = true
         activeComponents.forEach { it.onStart() }
     }
 
-    private fun onStop() {
-        allComponents.forEach { it.onStop() }
+    override fun onStop(owner: LifecycleOwner) {
+        activeComponents.forEach { it.onStop() }
+        destinationIsActive = false
+        logEvent("bridgeDestinationDidStop", location)
+    }
+
+    override fun onDestroy(owner: LifecycleOwner) {
+        destinationIsActive = false
+        logEvent("bridgeDestinationDidDestroy", location)
     }
 
     // Retrieve component(s) by type
