@@ -13,6 +13,7 @@ class BridgeComponentFactoryTest {
         )
 
         val delegate = BridgeDelegate(
+            location = "https://37signals.com",
             destination = AppBridgeDestination(),
             componentFactories = factories
         )
@@ -27,7 +28,6 @@ class BridgeComponentFactoryTest {
     }
 
     class AppBridgeDestination : BridgeDestination {
-        override fun bridgeDestinationLocation() = "https://37signals.com"
         override fun bridgeWebViewIsReady() = true
     }
 

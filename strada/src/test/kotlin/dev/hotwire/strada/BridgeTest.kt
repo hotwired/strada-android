@@ -135,7 +135,6 @@ class BridgeTest {
     }
 
     class AppBridgeDestination : BridgeDestination {
-        override fun bridgeDestinationLocation() = "https://37signals.com"
         override fun bridgeWebViewIsReady() = true
     }
 }

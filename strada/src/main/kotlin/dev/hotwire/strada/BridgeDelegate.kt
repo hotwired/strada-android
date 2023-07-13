@@ -6,12 +6,12 @@ import androidx.lifecycle.LifecycleOwner
 
 @Suppress("unused")
 class BridgeDelegate<D : BridgeDestination>(
+    val location: String,
     val destination: D,
     private val componentFactories: List<BridgeComponentFactory<D, BridgeComponent<D>>>
 ) : DefaultLifecycleObserver {
     internal var bridge: Bridge? = null
     private var destinationIsActive: Boolean = false
-    private val location: String = destination.bridgeDestinationLocation()
     private val initializedComponents = hashMapOf<String, BridgeComponent<D>>()
 
     val activeComponents: List<BridgeComponent<D>>

@@ -34,6 +34,7 @@ class BridgeDelegateTest {
         Bridge.initialize(bridge)
 
         delegate = BridgeDelegate(
+            location = "https://37signals.com",
             destination = AppBridgeDestination(),
             componentFactories = factories
         )
@@ -140,7 +141,6 @@ class BridgeDelegateTest {
     }
 
     class AppBridgeDestination : BridgeDestination {
-        override fun bridgeDestinationLocation() = "https://37signals.com"
         override fun bridgeWebViewIsReady() = true
     }
 
