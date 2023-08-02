@@ -134,7 +134,37 @@ class BridgeTest {
         assertEquals(bridge.sanitizeFunctionName("send()"), "send")
     }
 
+    @Test
+    fun userAgentSubstring() {
+        val factories = listOf(
+            BridgeComponentFactory("one", ::OneBridgeComponent),
+            BridgeComponentFactory("two", ::TwoBridgeComponent)
+        )
+
+        val userAgentSubstring = Bridge.userAgentSubstring(factories)
+        assertEquals(userAgentSubstring, "bridge-components: [one two]")
+    }
+
     class AppBridgeDestination : BridgeDestination {
         override fun bridgeWebViewIsReady() = true
+    }
+
+    private abstract class AppBridgeComponent(
+        name: String,
+        delegate: BridgeDelegate<AppBridgeDestination>
+    ) : BridgeComponent<AppBridgeDestination>(name, delegate)
+
+    private class OneBridgeComponent(
+        name: String,
+        delegate: BridgeDelegate<AppBridgeDestination>
+    ) : AppBridgeComponent(name, delegate) {
+        override fun handle(message: Message) {}
+    }
+
+    private class TwoBridgeComponent(
+        name: String,
+        delegate: BridgeDelegate<AppBridgeDestination>
+    ) : AppBridgeComponent(name, delegate) {
+        override fun handle(message: Message) {}
     }
 }
