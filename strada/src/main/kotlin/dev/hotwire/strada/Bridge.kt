@@ -125,6 +125,11 @@ class Bridge internal constructor(webView: WebView) {
             }
         }
 
+        fun userAgentSubstring(componentFactories: List<BridgeComponentFactory<*,*>>): String {
+            val components = componentFactories.joinToString(" ") { it.name }
+            return "bridge-components: [$components]"
+        }
+
         @VisibleForTesting
         internal fun initialize(bridge: Bridge) {
             instances.add(bridge)
