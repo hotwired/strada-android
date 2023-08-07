@@ -16,7 +16,7 @@ class BridgeTest {
     private val webView: WebView = mock()
     private val context: Context = mock()
     private val repository: Repository = mock()
-    private val delegate: BridgeDelegate<AppBridgeDestination> = mock()
+    private val delegate: BridgeDelegate<TestData.AppBridgeDestination> = mock()
 
     @Before
     fun setup() {
@@ -137,34 +137,11 @@ class BridgeTest {
     @Test
     fun userAgentSubstring() {
         val factories = listOf(
-            BridgeComponentFactory("one", ::OneBridgeComponent),
-            BridgeComponentFactory("two", ::TwoBridgeComponent)
+            BridgeComponentFactory("one", TestData::OneBridgeComponent),
+            BridgeComponentFactory("two", TestData::TwoBridgeComponent)
         )
 
         val userAgentSubstring = Bridge.userAgentSubstring(factories)
         assertEquals(userAgentSubstring, "bridge-components: [one two]")
-    }
-
-    class AppBridgeDestination : BridgeDestination {
-        override fun bridgeWebViewIsReady() = true
-    }
-
-    private abstract class AppBridgeComponent(
-        name: String,
-        delegate: BridgeDelegate<AppBridgeDestination>
-    ) : BridgeComponent<AppBridgeDestination>(name, delegate)
-
-    private class OneBridgeComponent(
-        name: String,
-        delegate: BridgeDelegate<AppBridgeDestination>
-    ) : AppBridgeComponent(name, delegate) {
-        override fun onReceive(message: Message) {}
-    }
-
-    private class TwoBridgeComponent(
-        name: String,
-        delegate: BridgeDelegate<AppBridgeDestination>
-    ) : AppBridgeComponent(name, delegate) {
-        override fun onReceive(message: Message) {}
     }
 }

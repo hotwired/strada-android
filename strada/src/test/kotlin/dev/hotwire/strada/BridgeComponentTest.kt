@@ -7,8 +7,8 @@ import org.junit.Before
 import org.junit.Test
 
 class BridgeComponentTest {
-    private lateinit var component: OneBridgeComponent
-    private val delegate: BridgeDelegate<AppBridgeDestination> = mock()
+    private lateinit var component: TestData.OneBridgeComponent
+    private val delegate: BridgeDelegate<TestData.AppBridgeDestination> = mock()
     private val bridge: Bridge = mock()
 
     private val message = Message(
@@ -21,7 +21,7 @@ class BridgeComponentTest {
 
     @Before
     fun setup() {
-        component = OneBridgeComponent("one", delegate)
+        component = TestData.OneBridgeComponent("one", delegate)
         whenever(delegate.bridge).thenReturn(bridge)
     }
 
@@ -70,33 +70,5 @@ class BridgeComponentTest {
 
         component.replyToPublic("connect", newJsonData)
         verify(bridge, never()).replyWith(any())
-    }
-
-    class AppBridgeDestination : BridgeDestination {
-        override fun bridgeWebViewIsReady() = true
-    }
-
-    private abstract class AppBridgeComponent(
-        name: String,
-        delegate: BridgeDelegate<AppBridgeDestination>
-    ) : BridgeComponent<AppBridgeDestination>(name, delegate)
-
-    private class OneBridgeComponent(
-        name: String,
-        delegate: BridgeDelegate<AppBridgeDestination>
-    ) : AppBridgeComponent(name, delegate) {
-        override fun onReceive(message: Message) {}
-
-        fun replyWithPublic(message: Message) {
-            replyWith(message)
-        }
-
-        fun replyToPublic(event: String, jsonData: String) {
-            replyTo(event, jsonData)
-        }
-
-        fun messageReceivedForPublic(event: String): Message? {
-            return messageReceivedFor(event)
-        }
     }
 }
