@@ -1,6 +1,6 @@
 package dev.hotwire.strada
 
-data class Message(
+data class Message internal constructor(
     /**
      * A unique identifier for this message. You can reply to messages by sending
      * the same message back, or creating a new message with the same id
