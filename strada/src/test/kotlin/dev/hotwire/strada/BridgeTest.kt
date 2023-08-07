@@ -47,7 +47,7 @@ class BridgeTest {
     }
 
     @Test
-    fun replyTo() {
+    fun replyWith() {
         val json = """{\"id\":\"1\",\"component\":\"page\",\"event\":\"connect\",\"data\":{\"title\":\"Page title\",\"subtitle\":\"Page subtitle\",\"html\":\"<span class='android'>content</span>\"}}"""
         val data = """{"title":"Page title","subtitle":"Page subtitle","html":"<span class='android'>content</span>"}"""
         val message = Message(
@@ -58,8 +58,8 @@ class BridgeTest {
             jsonData = data
         )
 
-        val javascript = """window.nativeBridge.replyTo("$json")"""
-        bridge.replyTo(message)
+        val javascript = """window.nativeBridge.replyWith("$json")"""
+        bridge.replyWith(message)
         verify(webView).evaluateJavascript(eq(javascript), any())
     }
 
@@ -131,7 +131,7 @@ class BridgeTest {
 
     @Test
     fun sanitizeFunctionName() {
-        assertEquals(bridge.sanitizeFunctionName("replyTo()"), "replyTo")
+        assertEquals(bridge.sanitizeFunctionName("replyWith()"), "replyWith")
     }
 
     @Test

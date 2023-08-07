@@ -2,8 +2,8 @@ package dev.hotwire.strada
 
 data class Message internal constructor(
     /**
-     * A unique identifier for this message. You can reply to messages by sending
-     * the same message back, or creating a new message with the same id
+     * A unique identifier for this message. When you reply to the web with
+     * a message, this identifier is used to find its previously sent message.
      */
     val id: String,
 

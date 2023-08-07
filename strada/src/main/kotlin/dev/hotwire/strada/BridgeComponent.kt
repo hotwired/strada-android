@@ -6,8 +6,8 @@ abstract class BridgeComponent<in D : BridgeDestination>(
 ) {
     abstract fun onReceive(message: Message)
 
-    fun replyTo(message: Message) {
-        delegate.bridge?.replyTo(message) ?: run {
+    fun replyWith(message: Message) {
+        delegate.bridge?.replyWith(message) ?: run {
             logEvent("bridgeMessageFailedToReply", "bridge is not available")
         }
     }

@@ -51,8 +51,8 @@
       return this.supportedComponents.includes(component)
     }
 
-    // Reply to message from web
-    replyTo(message) {
+    // Reply to web with message
+    replyWith(message) {
       if (window.webBridge) {
         window.webBridge.receive(JSON.parse(message))
       }
