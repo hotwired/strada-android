@@ -4,11 +4,11 @@ abstract class BridgeComponent<in D : BridgeDestination>(
     val name: String,
     private val delegate: BridgeDelegate<D>
 ) {
-    abstract fun handle(message: Message)
+    abstract fun onReceive(message: Message)
 
-    fun send(message: Message) {
-        delegate.bridge?.send(message) ?: run {
-            logEvent("bridgeMessageFailedToSend", "bridge is not available")
+    fun replyTo(message: Message) {
+        delegate.bridge?.replyTo(message) ?: run {
+            logEvent("bridgeMessageFailedToReply", "bridge is not available")
         }
     }
 
