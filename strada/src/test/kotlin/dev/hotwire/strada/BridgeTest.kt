@@ -47,7 +47,7 @@ class BridgeTest {
     }
 
     @Test
-    fun send() {
+    fun replyWith() {
         val json = """{\"id\":\"1\",\"component\":\"page\",\"event\":\"connect\",\"data\":{\"title\":\"Page title\",\"subtitle\":\"Page subtitle\",\"html\":\"<span class='android'>content</span>\"}}"""
         val data = """{"title":"Page title","subtitle":"Page subtitle","html":"<span class='android'>content</span>"}"""
         val message = Message(
@@ -58,8 +58,8 @@ class BridgeTest {
             jsonData = data
         )
 
-        val javascript = """window.nativeBridge.send("$json")"""
-        bridge.send(message)
+        val javascript = """window.nativeBridge.replyWith("$json")"""
+        bridge.replyWith(message)
         verify(webView).evaluateJavascript(eq(javascript), any())
     }
 
@@ -131,7 +131,7 @@ class BridgeTest {
 
     @Test
     fun sanitizeFunctionName() {
-        assertEquals(bridge.sanitizeFunctionName("send()"), "send")
+        assertEquals(bridge.sanitizeFunctionName("replyWith()"), "replyWith")
     }
 
     @Test
@@ -158,13 +158,13 @@ class BridgeTest {
         name: String,
         delegate: BridgeDelegate<AppBridgeDestination>
     ) : AppBridgeComponent(name, delegate) {
-        override fun handle(message: Message) {}
+        override fun onReceive(message: Message) {}
     }
 
     private class TwoBridgeComponent(
         name: String,
         delegate: BridgeDelegate<AppBridgeDestination>
     ) : AppBridgeComponent(name, delegate) {
-        override fun handle(message: Message) {}
+        override fun onReceive(message: Message) {}
     }
 }

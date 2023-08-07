@@ -51,7 +51,7 @@ class BridgeDelegate<D : BridgeDestination>(
     internal fun bridgeDidReceiveMessage(message: Message): Boolean {
         return if (destinationIsActive && location == message.metadata?.url) {
             logMessage("bridgeDidReceiveMessage", message)
-            getOrCreateComponent(message.component)?.handle(message)
+            getOrCreateComponent(message.component)?.onReceive(message)
             true
         } else {
             logMessage("bridgeDidIgnoreMessage", message)

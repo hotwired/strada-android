@@ -153,13 +153,13 @@ class BridgeDelegateTest {
         name: String,
         delegate: BridgeDelegate<AppBridgeDestination>
     ) : AppBridgeComponent(name, delegate) {
-        override fun handle(message: Message) {}
+        override fun onReceive(message: Message) {}
     }
 
     private class TwoBridgeComponent(
         name: String,
         delegate: BridgeDelegate<AppBridgeDestination>
     ) : AppBridgeComponent(name, delegate) {
-        override fun handle(message: Message) {}
+        override fun onReceive(message: Message) {}
     }
 }
