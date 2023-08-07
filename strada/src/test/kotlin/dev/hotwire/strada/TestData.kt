@@ -27,12 +27,16 @@ object TestData {
     ) : AppBridgeComponent(name, delegate) {
         override fun onReceive(message: Message) {}
 
-        fun replyWithPublic(message: Message) {
-            replyWith(message)
+        fun replyWithPublic(message: Message): Boolean {
+            return replyWith(message)
         }
 
-        fun replyToPublic(event: String, jsonData: String) {
-            replyTo(event, jsonData)
+        fun replyToPublic(event: String): Boolean {
+            return replyTo(event)
+        }
+
+        fun replyToPublic(event: String, jsonData: String): Boolean {
+            return replyTo(event, jsonData)
         }
 
         fun messageReceivedForPublic(event: String): Message? {

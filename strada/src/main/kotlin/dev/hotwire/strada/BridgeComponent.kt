@@ -54,7 +54,7 @@ abstract class BridgeComponent<in D : BridgeDestination>(
     protected fun replyTo(event: String, jsonData: String): Boolean {
         val message = messageReceivedFor(event) ?: run {
             logEvent("bridgeMessageFailedToReply", "message for event '$event' was not received")
-            return true
+            return false
         }
 
         return reply(message.replacing(jsonData = jsonData))

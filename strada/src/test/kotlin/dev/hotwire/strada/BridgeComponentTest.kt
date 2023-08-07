@@ -50,25 +50,45 @@ class BridgeComponentTest {
         val newJsonData = """{"title":"Page-title"}"""
         val newMessage = message.replacing(jsonData = newJsonData)
 
-        component.replyWithPublic(newMessage)
+        val replied = component.replyWithPublic(newMessage)
+        assertEquals(true, replied)
         verify(bridge).replyWith(eq(newMessage))
     }
 
     @Test
     fun replyTo() {
+        component.didReceive(message)
+
+        val replied = component.replyToPublic("connect")
+        assertEquals(true, replied)
+        verify(bridge).replyWith(eq(message))
+    }
+
+    @Test
+    fun replyToReplacingData() {
         val newJsonData = """{"title":"Page-title"}"""
         val newMessage = message.replacing(jsonData = newJsonData)
 
         component.didReceive(message)
-        component.replyToPublic("connect", newJsonData)
+
+        val replied = component.replyToPublic("connect", newJsonData)
+        assertEquals(true, replied)
         verify(bridge).replyWith(eq(newMessage))
     }
 
     @Test
     fun replyToIgnoresNotReceived() {
+        val replied = component.replyToPublic("connect")
+        assertEquals(false, replied)
+        verify(bridge, never()).replyWith(any())
+    }
+
+    @Test
+    fun replyToReplacingDataIgnoresNotReceived() {
         val newJsonData = """{"title":"Page-title"}"""
 
-        component.replyToPublic("connect", newJsonData)
+        val replied = component.replyToPublic("connect", newJsonData)
+        assertEquals(false, replied)
         verify(bridge, never()).replyWith(any())
     }
 }
