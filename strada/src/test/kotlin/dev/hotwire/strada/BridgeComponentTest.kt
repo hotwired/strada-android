@@ -34,6 +34,22 @@ class BridgeComponentTest {
     }
 
     @Test
+    fun didStart() {
+        assertEquals(false, component.onStartCalled)
+
+        component.didStart()
+        assertEquals(true, component.onStartCalled)
+    }
+
+    @Test
+    fun didStop() {
+        assertEquals(false, component.onStopCalled)
+
+        component.didStop()
+        assertEquals(true, component.onStopCalled)
+    }
+
+    @Test
     fun didReceiveSavesLastMessage() {
         val newJsonData = """{"title":"Page-title"}"""
         val newMessage = message.replacing(jsonData = newJsonData)

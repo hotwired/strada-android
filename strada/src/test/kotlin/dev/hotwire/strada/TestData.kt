@@ -25,6 +25,17 @@ object TestData {
         name: String,
         delegate: BridgeDelegate<AppBridgeDestination>
     ) : AppBridgeComponent(name, delegate) {
+        var onStartCalled = false
+        var onStopCalled = false
+
+        override fun onStart() {
+            onStartCalled = true
+        }
+
+        override fun onStop() {
+            onStopCalled = true
+        }
+
         override fun onReceive(message: Message) {}
 
         fun replyWithPublic(message: Message): Boolean {

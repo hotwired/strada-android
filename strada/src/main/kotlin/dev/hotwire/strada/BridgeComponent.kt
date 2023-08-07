@@ -11,8 +11,27 @@ abstract class BridgeComponent<in D : BridgeDestination>(
         onReceive(message)
     }
 
-    open fun onStart() {}
-    open fun onStop() {}
+    internal fun didStart() {
+        onStart()
+    }
+
+    internal fun didStop() {
+        onStop()
+    }
+
+    /**
+     * Called when the component's destination starts (and is active)
+     * based on its lifecycle events. You can use this as an opportunity
+     * to update the component's state/view.
+     */
+    protected open fun onStart() {}
+
+    /**
+     * Called when the component's destination stops (and is inactive)
+     * based on its lifecycle events. You can use this as an opportunity
+     * to update the component's state/view.
+     */
+    protected open fun onStop() {}
 
     /**
      * Called when a message is received from the web bridge. Handle the
