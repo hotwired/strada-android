@@ -24,8 +24,24 @@ abstract class BridgeComponent<in D : BridgeDestination>(
      * Reply to the web with a received message, optionally replacing its
      * `event` or `jsonData`.
      */
-    protected fun replyWith(message: Message) {
-        reply(message)
+    protected fun replyWith(message: Message): Boolean {
+        return reply(message)
+    }
+
+    /**
+     * Reply to the web with the last received message for a given `event`
+     * with its original `jsonData`.
+     *
+     * NOTE: If a message has not been received for the given `event`, the
+     * reply will be ignored.
+     */
+    protected fun replyTo(event: String): Boolean {
+        val message = messageReceivedFor(event) ?: run {
+            logEvent("bridgeMessageFailedToReply", "message for event '$event' was not received")
+            return false
+        }
+
+        return reply(message)
     }
 
     /**
@@ -35,13 +51,13 @@ abstract class BridgeComponent<in D : BridgeDestination>(
      * NOTE: If a message has not been received for the given `event`, the
      * reply will be ignored.
      */
-    protected fun replyTo(event: String, jsonData: String) {
+    protected fun replyTo(event: String, jsonData: String): Boolean {
         val message = messageReceivedFor(event) ?: run {
             logEvent("bridgeMessageFailedToReply", "message for event '$event' was not received")
-            return
+            return false
         }
 
-        reply(message.replacing(jsonData = jsonData))
+        return reply(message.replacing(jsonData = jsonData))
     }
 
     /**
@@ -51,9 +67,12 @@ abstract class BridgeComponent<in D : BridgeDestination>(
         return receivedMessages[event]
     }
 
-    private fun reply(message: Message) {
+    private fun reply(message: Message): Boolean {
         delegate.bridge?.replyWith(message) ?: run {
             logEvent("bridgeMessageFailedToReply", "bridge is not available")
+            return false
         }
+
+        return true
     }
 }
