@@ -14,14 +14,14 @@ import org.junit.Test
 import org.mockito.Mockito.verify
 
 class BridgeDelegateTest {
-    private lateinit var delegate: BridgeDelegate<AppBridgeDestination>
+    private lateinit var delegate: BridgeDelegate<TestData.AppBridgeDestination>
     private lateinit var lifecycleOwner: TestLifecycleOwner
     private val bridge: Bridge = mock()
     private val webView: WebView = mock()
 
     private val factories = listOf(
-        BridgeComponentFactory("one", ::OneBridgeComponent),
-        BridgeComponentFactory("two", ::TwoBridgeComponent)
+        BridgeComponentFactory("one", TestData::OneBridgeComponent),
+        BridgeComponentFactory("two", TestData::TwoBridgeComponent)
     )
 
     @Rule
@@ -35,7 +35,7 @@ class BridgeDelegateTest {
 
         delegate = BridgeDelegate(
             location = "https://37signals.com",
-            destination = AppBridgeDestination(),
+            destination = TestData.AppBridgeDestination(),
             componentFactories = factories
         )
         delegate.bridge = bridge
@@ -72,9 +72,9 @@ class BridgeDelegateTest {
             jsonData = """{"title":"Page-title","subtitle":"Page-subtitle"}"""
         )
 
-        assertNull(delegate.component<OneBridgeComponent>())
+        assertNull(delegate.component<TestData.OneBridgeComponent>())
         assertEquals(true, delegate.bridgeDidReceiveMessage(message))
-        assertNotNull(delegate.component<OneBridgeComponent>())
+        assertNotNull(delegate.component<TestData.OneBridgeComponent>())
     }
 
     @Test
@@ -133,33 +133,10 @@ class BridgeDelegateTest {
         )
 
         assertEquals(true, delegate.bridgeDidReceiveMessage(message))
-        assertNotNull(delegate.component<OneBridgeComponent>())
+        assertNotNull(delegate.component<TestData.OneBridgeComponent>())
 
         lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
         assertEquals(false, delegate.bridgeDidReceiveMessage(message))
-        assertNull(delegate.component<OneBridgeComponent>())
-    }
-
-    class AppBridgeDestination : BridgeDestination {
-        override fun bridgeWebViewIsReady() = true
-    }
-
-    private abstract class AppBridgeComponent(
-        name: String,
-        delegate: BridgeDelegate<AppBridgeDestination>
-    ) : BridgeComponent<AppBridgeDestination>(name, delegate)
-
-    private class OneBridgeComponent(
-        name: String,
-        delegate: BridgeDelegate<AppBridgeDestination>
-    ) : AppBridgeComponent(name, delegate) {
-        override fun onReceive(message: Message) {}
-    }
-
-    private class TwoBridgeComponent(
-        name: String,
-        delegate: BridgeDelegate<AppBridgeDestination>
-    ) : AppBridgeComponent(name, delegate) {
-        override fun onReceive(message: Message) {}
+        assertNull(delegate.component<TestData.OneBridgeComponent>())
     }
 }

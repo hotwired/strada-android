@@ -51,7 +51,7 @@ class BridgeDelegate<D : BridgeDestination>(
     internal fun bridgeDidReceiveMessage(message: Message): Boolean {
         return if (destinationIsActive && location == message.metadata?.url) {
             logMessage("bridgeDidReceiveMessage", message)
-            getOrCreateComponent(message.component)?.onReceive(message)
+            getOrCreateComponent(message.component)?.didReceive(message)
             true
         } else {
             logMessage("bridgeDidIgnoreMessage", message)
@@ -68,11 +68,11 @@ class BridgeDelegate<D : BridgeDestination>(
     override fun onStart(owner: LifecycleOwner) {
         logEvent("bridgeDestinationDidStart", location)
         destinationIsActive = true
-        activeComponents.forEach { it.onStart() }
+        activeComponents.forEach { it.didStart() }
     }
 
     override fun onStop(owner: LifecycleOwner) {
-        activeComponents.forEach { it.onStop() }
+        activeComponents.forEach { it.didStop() }
         destinationIsActive = false
         logEvent("bridgeDestinationDidStop", location)
     }
