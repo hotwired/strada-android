@@ -55,7 +55,7 @@ abstract class BridgeComponent<in D : BridgeDestination>(
      * reply will be ignored.
      */
     protected fun replyTo(event: String): Boolean {
-        val message = messageReceivedFor(event) ?: run {
+        val message = receivedMessageFor(event) ?: run {
             logEvent("bridgeMessageFailedToReply", "message for event '$event' was not received")
             return false
         }
@@ -71,7 +71,7 @@ abstract class BridgeComponent<in D : BridgeDestination>(
      * reply will be ignored.
      */
     protected fun replyTo(event: String, jsonData: String): Boolean {
-        val message = messageReceivedFor(event) ?: run {
+        val message = receivedMessageFor(event) ?: run {
             logEvent("bridgeMessageFailedToReply", "message for event '$event' was not received")
             return false
         }
@@ -82,7 +82,7 @@ abstract class BridgeComponent<in D : BridgeDestination>(
     /**
      * Returns the last received message for a given `event`, if available.
      */
-    protected fun messageReceivedFor(event: String): Message? {
+    protected fun receivedMessageFor(event: String): Message? {
         return receivedMessages[event]
     }
 

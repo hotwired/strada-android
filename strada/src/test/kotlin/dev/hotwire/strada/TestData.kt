@@ -50,8 +50,8 @@ object TestData {
             return replyTo(event, jsonData)
         }
 
-        fun messageReceivedForPublic(event: String): Message? {
-            return messageReceivedFor(event)
+        fun receivedMessageForPublic(event: String): Message? {
+            return receivedMessageFor(event)
         }
     }
 

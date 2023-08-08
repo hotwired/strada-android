@@ -27,10 +27,10 @@ class BridgeComponentTest {
 
     @Test
     fun didReceive() {
-        assertNull(component.messageReceivedForPublic("connect"))
+        assertNull(component.receivedMessageForPublic("connect"))
 
         component.didReceive(message)
-        assertEquals(message, component.messageReceivedForPublic("connect"))
+        assertEquals(message, component.receivedMessageForPublic("connect"))
     }
 
     @Test
@@ -55,10 +55,10 @@ class BridgeComponentTest {
         val newMessage = message.replacing(jsonData = newJsonData)
 
         component.didReceive(message)
-        assertEquals(message, component.messageReceivedForPublic("connect"))
+        assertEquals(message, component.receivedMessageForPublic("connect"))
 
         component.didReceive(newMessage)
-        assertEquals(newMessage, component.messageReceivedForPublic("connect"))
+        assertEquals(newMessage, component.receivedMessageForPublic("connect"))
     }
 
     @Test
