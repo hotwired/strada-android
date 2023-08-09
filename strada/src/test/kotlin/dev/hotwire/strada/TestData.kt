@@ -38,18 +38,6 @@ object TestData {
 
         override fun onReceive(message: Message) {}
 
-        fun replyWithPublic(message: Message): Boolean {
-            return replyWith(message)
-        }
-
-        fun replyToPublic(event: String): Boolean {
-            return replyTo(event)
-        }
-
-        fun replyToPublic(event: String, jsonData: String): Boolean {
-            return replyTo(event, jsonData)
-        }
-
         fun receivedMessageForPublic(event: String): Message? {
             return receivedMessageFor(event)
         }

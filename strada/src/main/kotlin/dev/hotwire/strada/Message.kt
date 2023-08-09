@@ -43,6 +43,25 @@ data class Message internal constructor(
         metadata = this.metadata,
         jsonData = jsonData
     )
+
+    inline fun <reified T> replacing(
+        event: String = this.event,
+        data: T
+    ): Message {
+        val encoder = requireNotNull(Strada.config.jsonEncoder) {
+            "A Strada.config.jsonEncoder must be set to decode and encode data"
+        }
+
+        return replacing(event, encoder.toJson(data, T::class.java))
+    }
+
+    inline fun <reified T> data(): T? {
+        val encoder = requireNotNull(Strada.config.jsonEncoder) {
+            "A Strada.config.jsonEncoder must be set to decode and encode data"
+        }
+
+        return encoder.toObject(jsonData, T::class.java)
+    }
 }
 
 data class Metadata(
