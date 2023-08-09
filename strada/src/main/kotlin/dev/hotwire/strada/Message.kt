@@ -48,19 +48,19 @@ data class Message internal constructor(
         event: String = this.event,
         data: T
     ): Message {
-        val encoder = requireNotNull(Strada.config.jsonEncoder) {
-            "A Strada.config.jsonEncoder must be set to encode data"
+        val converter = requireNotNull(Strada.config.jsonConverter) {
+            "A Strada.config.jsonConverter must be set to encode json"
         }
 
-        return replacing(event, encoder.toJson(data, T::class.java))
+        return replacing(event, converter.toJson(data, T::class.java))
     }
 
     inline fun <reified T> data(): T? {
-        val encoder = requireNotNull(Strada.config.jsonEncoder) {
-            "A Strada.config.jsonEncoder must be set to decode data"
+        val converter = requireNotNull(Strada.config.jsonConverter) {
+            "A Strada.config.jsonConverter must be set to decode json"
         }
 
-        return encoder.toObject(jsonData, T::class.java)
+        return converter.toObject(jsonData, T::class.java)
     }
 }
 

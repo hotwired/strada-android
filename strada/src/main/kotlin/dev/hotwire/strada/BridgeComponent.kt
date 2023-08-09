@@ -95,11 +95,11 @@ abstract class BridgeComponent<in D : BridgeDestination>(
      * reply will be ignored.
      */
     inline fun <reified T> replyTo(event: String, data: T): Boolean {
-        val encoder = requireNotNull(Strada.config.jsonEncoder) {
-            "A Strada.config.jsonEncoder must be set to encode data"
+        val converter = requireNotNull(Strada.config.jsonConverter) {
+            "A Strada.config.jsonConverter must be set to encode data"
         }
 
-        return replyTo(event, jsonData = encoder.toJson(data, T::class.java))
+        return replyTo(event, jsonData = converter.toJson(data, T::class.java))
     }
 
     private fun reply(message: Message): Boolean {
