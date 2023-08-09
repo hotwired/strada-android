@@ -96,7 +96,7 @@ abstract class BridgeComponent<in D : BridgeDestination>(
      */
     inline fun <reified T> replyTo(event: String, data: T): Boolean {
         val encoder = requireNotNull(Strada.config.jsonEncoder) {
-            "A Strada.config.jsonEncoder must be set to decode and encode data"
+            "A Strada.config.jsonEncoder must be set to encode data"
         }
 
         return replyTo(event, jsonData = encoder.toJson(data, T::class.java))

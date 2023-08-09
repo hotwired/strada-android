@@ -1,5 +1,5 @@
 package dev.hotwire.strada
 
-class StradaConfig {
+class StradaConfig internal constructor() {
     var jsonEncoder: StradaJsonEncoder? = null
 }
