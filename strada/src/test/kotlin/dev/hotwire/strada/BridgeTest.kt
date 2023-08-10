@@ -133,15 +133,4 @@ class BridgeTest {
     fun sanitizeFunctionName() {
         assertEquals(bridge.sanitizeFunctionName("replyWith()"), "replyWith")
     }
-
-    @Test
-    fun userAgentSubstring() {
-        val factories = listOf(
-            BridgeComponentFactory("one", TestData::OneBridgeComponent),
-            BridgeComponentFactory("two", TestData::TwoBridgeComponent)
-        )
-
-        val userAgentSubstring = Bridge.userAgentSubstring(factories)
-        assertEquals(userAgentSubstring, "bridge-components: [one two]")
-    }
 }
