@@ -40,10 +40,17 @@ abstract class BridgeComponent<in D : BridgeDestination>(
     protected abstract fun onReceive(message: Message)
 
     /**
+     * Returns the last received message for a given `event`, if available.
+     */
+    protected fun receivedMessageFor(event: String): Message? {
+        return receivedMessages[event]
+    }
+
+    /**
      * Reply to the web with a received message, optionally replacing its
      * `event` or `jsonData`.
      */
-    protected fun replyWith(message: Message): Boolean {
+    fun replyWith(message: Message): Boolean {
         return reply(message)
     }
 
@@ -54,7 +61,7 @@ abstract class BridgeComponent<in D : BridgeDestination>(
      * NOTE: If a message has not been received for the given `event`, the
      * reply will be ignored.
      */
-    protected fun replyTo(event: String): Boolean {
+    fun replyTo(event: String): Boolean {
         val message = receivedMessageFor(event) ?: run {
             logEvent("bridgeMessageFailedToReply", "message for event '$event' was not received")
             return false
@@ -70,7 +77,7 @@ abstract class BridgeComponent<in D : BridgeDestination>(
      * NOTE: If a message has not been received for the given `event`, the
      * reply will be ignored.
      */
-    protected fun replyTo(event: String, jsonData: String): Boolean {
+    fun replyTo(event: String, jsonData: String): Boolean {
         val message = receivedMessageFor(event) ?: run {
             logEvent("bridgeMessageFailedToReply", "message for event '$event' was not received")
             return false
@@ -80,10 +87,15 @@ abstract class BridgeComponent<in D : BridgeDestination>(
     }
 
     /**
-     * Returns the last received message for a given `event`, if available.
+     * Reply to the web with the last received message for a given `event`,
+     * replacing its `jsonData` with encoded json from the provided `data`
+     * object.
+     *
+     * NOTE: If a message has not been received for the given `event`, the
+     * reply will be ignored.
      */
-    protected fun receivedMessageFor(event: String): Message? {
-        return receivedMessages[event]
+    inline fun <reified T> replyTo(event: String, data: T): Boolean {
+        return replyTo(event, jsonData = StradaJsonConverter.toJson(data))
     }
 
     private fun reply(message: Message): Boolean {

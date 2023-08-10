@@ -1,6 +1,9 @@
 package dev.hotwire.strada
 
 import com.nhaarman.mockito_kotlin.*
+import kotlinx.serialization.Serializable
+import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Before
@@ -21,6 +24,7 @@ class BridgeComponentTest {
 
     @Before
     fun setup() {
+        Strada.config.jsonConverter = KotlinXJsonConverter()
         component = TestData.OneBridgeComponent("one", delegate)
         whenever(delegate.bridge).thenReturn(bridge)
     }
@@ -66,7 +70,7 @@ class BridgeComponentTest {
         val newJsonData = """{"title":"Page-title"}"""
         val newMessage = message.replacing(jsonData = newJsonData)
 
-        val replied = component.replyWithPublic(newMessage)
+        val replied = component.replyWith(newMessage)
         assertEquals(true, replied)
         verify(bridge).replyWith(eq(newMessage))
     }
@@ -75,9 +79,21 @@ class BridgeComponentTest {
     fun replyTo() {
         component.didReceive(message)
 
-        val replied = component.replyToPublic("connect")
+        val replied = component.replyTo("connect")
         assertEquals(true, replied)
         verify(bridge).replyWith(eq(message))
+    }
+
+    @Test
+    fun replyToReplacingJsonData() {
+        val newJsonData = """{"title":"Page-title"}"""
+        val newMessage = message.replacing(jsonData = newJsonData)
+
+        component.didReceive(message)
+
+        val replied = component.replyTo("connect", newJsonData)
+        assertEquals(true, replied)
+        verify(bridge).replyWith(eq(newMessage))
     }
 
     @Test
@@ -87,24 +103,38 @@ class BridgeComponentTest {
 
         component.didReceive(message)
 
-        val replied = component.replyToPublic("connect", newJsonData)
+        val replied = component.replyTo("connect", MessageData(title = "Page-title"))
         assertEquals(true, replied)
         verify(bridge).replyWith(eq(newMessage))
     }
 
     @Test
+    fun replyToReplacingDataWithNoConverter() {
+        Strada.config.jsonConverter = null
+
+        component.didReceive(message)
+
+        assertThatThrownBy { component.replyTo("connect", MessageData(title = "Page-title")) }
+            .isInstanceOf(IllegalArgumentException::class.java)
+            .hasMessage(StradaJsonConverter.NO_CONVERTER)
+    }
+
+    @Test
     fun replyToIgnoresNotReceived() {
-        val replied = component.replyToPublic("connect")
+        val replied = component.replyTo("connect")
         assertEquals(false, replied)
         verify(bridge, never()).replyWith(any())
     }
 
     @Test
-    fun replyToReplacingDataIgnoresNotReceived() {
+    fun replyToReplacingJsonDataIgnoresNotReceived() {
         val newJsonData = """{"title":"Page-title"}"""
 
-        val replied = component.replyToPublic("connect", newJsonData)
+        val replied = component.replyTo("connect", newJsonData)
         assertEquals(false, replied)
         verify(bridge, never()).replyWith(any())
     }
+
+    @Serializable
+    private class MessageData(val title: String)
 }

@@ -43,6 +43,17 @@ data class Message internal constructor(
         metadata = this.metadata,
         jsonData = jsonData
     )
+
+    inline fun <reified T> replacing(
+        event: String = this.event,
+        data: T
+    ): Message {
+        return replacing(event, StradaJsonConverter.toJson(data))
+    }
+
+    inline fun <reified T> data(): T? {
+        return StradaJsonConverter.toObject(jsonData)
+    }
 }
 
 data class Metadata(
