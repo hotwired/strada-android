@@ -11,7 +11,7 @@ abstract class StradaJsonConverter {
             "A Strada.config.jsonConverter must be set to encode or decode json"
 
         const val INVALID_CONVERTER =
-            "The configured json converter must be a StradaJsonTypeConverter " +
+            "The configured json converter must implement a StradaJsonTypeConverter " +
                 "or use the provided KotlinXJsonConverter."
 
         inline fun <reified T> toObject(jsonData: String): T? {

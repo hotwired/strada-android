@@ -1,6 +1,9 @@
 package dev.hotwire.strada
 
 import com.nhaarman.mockito_kotlin.*
+import kotlinx.serialization.Serializable
+import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Before
@@ -21,6 +24,7 @@ class BridgeComponentTest {
 
     @Before
     fun setup() {
+        Strada.config.jsonConverter = KotlinXJsonConverter()
         component = TestData.OneBridgeComponent("one", delegate)
         whenever(delegate.bridge).thenReturn(bridge)
     }
@@ -81,7 +85,7 @@ class BridgeComponentTest {
     }
 
     @Test
-    fun replyToReplacingData() {
+    fun replyToReplacingJsonData() {
         val newJsonData = """{"title":"Page-title"}"""
         val newMessage = message.replacing(jsonData = newJsonData)
 
@@ -93,6 +97,29 @@ class BridgeComponentTest {
     }
 
     @Test
+    fun replyToReplacingData() {
+        val newJsonData = """{"title":"Page-title"}"""
+        val newMessage = message.replacing(jsonData = newJsonData)
+
+        component.didReceive(message)
+
+        val replied = component.replyTo("connect", MessageData(title = "Page-title"))
+        assertEquals(true, replied)
+        verify(bridge).replyWith(eq(newMessage))
+    }
+
+    @Test
+    fun replyToReplacingDataWithNoConverter() {
+        Strada.config.jsonConverter = null
+
+        component.didReceive(message)
+
+        assertThatThrownBy { component.replyTo("connect", MessageData(title = "Page-title")) }
+            .isInstanceOf(IllegalArgumentException::class.java)
+            .hasMessage(StradaJsonConverter.NO_CONVERTER)
+    }
+
+    @Test
     fun replyToIgnoresNotReceived() {
         val replied = component.replyTo("connect")
         assertEquals(false, replied)
@@ -100,11 +127,14 @@ class BridgeComponentTest {
     }
 
     @Test
-    fun replyToReplacingDataIgnoresNotReceived() {
+    fun replyToReplacingJsonDataIgnoresNotReceived() {
         val newJsonData = """{"title":"Page-title"}"""
 
         val replied = component.replyTo("connect", newJsonData)
         assertEquals(false, replied)
         verify(bridge, never()).replyWith(any())
     }
+
+    @Serializable
+    private class MessageData(val title: String)
 }
