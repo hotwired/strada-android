@@ -3,13 +3,8 @@ package dev.hotwire.strada
 import android.util.Log
 
 @Suppress("unused")
-object StradaLog {
+internal object StradaLog {
     private const val DEFAULT_TAG = "StradaLog"
-
-    /**
-     * Enable debug logging to see message communication from/to the WebView.
-     */
-    var debugLoggingEnabled = false
 
     internal fun d(msg: String) = log(Log.DEBUG, DEFAULT_TAG, msg)
 
@@ -17,7 +12,7 @@ object StradaLog {
 
     private fun log(logLevel: Int, tag: String, msg: String) {
         when (logLevel) {
-            Log.DEBUG -> if (debugLoggingEnabled) Log.d(tag, msg)
+            Log.DEBUG -> if (Strada.config.debugLoggingEnabled) Log.d(tag, msg)
             Log.ERROR -> Log.e(tag, msg)
         }
     }
