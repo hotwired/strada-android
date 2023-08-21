@@ -1,6 +1,6 @@
 package dev.hotwire.strada
 
-data class Message internal constructor(
+data class Message constructor(
     /**
      * A unique identifier for this message. When you reply to the web with
      * a message, this identifier is used to find its previously sent message.

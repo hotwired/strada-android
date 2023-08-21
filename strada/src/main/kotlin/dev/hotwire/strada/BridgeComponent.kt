@@ -20,31 +20,31 @@ abstract class BridgeComponent<in D : BridgeDestination>(
     }
 
     /**
+     * Returns the last received message for a given `event`, if available.
+     */
+    protected fun receivedMessageFor(event: String): Message? {
+        return receivedMessages[event]
+    }
+
+    /**
+     * Called when a message is received from the web bridge. Handle the
+     * message for its `event` type for the custom component's behavior.
+     */
+    abstract fun onReceive(message: Message)
+
+    /**
      * Called when the component's destination starts (and is active)
      * based on its lifecycle events. You can use this as an opportunity
      * to update the component's state/view.
      */
-    protected open fun onStart() {}
+    open fun onStart() {}
 
     /**
      * Called when the component's destination stops (and is inactive)
      * based on its lifecycle events. You can use this as an opportunity
      * to update the component's state/view.
      */
-    protected open fun onStop() {}
-
-    /**
-     * Called when a message is received from the web bridge. Handle the
-     * message for its `event` type for the custom component's behavior.
-     */
-    protected abstract fun onReceive(message: Message)
-
-    /**
-     * Returns the last received message for a given `event`, if available.
-     */
-    protected fun receivedMessageFor(event: String): Message? {
-        return receivedMessages[event]
-    }
+    open fun onStop() {}
 
     /**
      * Reply to the web with a received message, optionally replacing its
@@ -99,11 +99,6 @@ abstract class BridgeComponent<in D : BridgeDestination>(
     }
 
     private fun reply(message: Message): Boolean {
-        delegate.bridge?.replyWith(message) ?: run {
-            logEvent("bridgeMessageFailedToReply", "bridge is not available")
-            return false
-        }
-
-        return true
+        return delegate.replyWith(message)
     }
 }

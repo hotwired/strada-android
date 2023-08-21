@@ -12,7 +12,6 @@ import org.junit.Test
 class BridgeComponentTest {
     private lateinit var component: TestData.OneBridgeComponent
     private val delegate: BridgeDelegate<TestData.AppBridgeDestination> = mock()
-    private val bridge: Bridge = mock()
 
     private val message = Message(
         id = "1",
@@ -26,7 +25,6 @@ class BridgeComponentTest {
     fun setup() {
         Strada.config.jsonConverter = KotlinXJsonConverter()
         component = TestData.OneBridgeComponent("one", delegate)
-        whenever(delegate.bridge).thenReturn(bridge)
     }
 
     @Test
@@ -70,18 +68,16 @@ class BridgeComponentTest {
         val newJsonData = """{"title":"Page-title"}"""
         val newMessage = message.replacing(jsonData = newJsonData)
 
-        val replied = component.replyWith(newMessage)
-        assertEquals(true, replied)
-        verify(bridge).replyWith(eq(newMessage))
+        component.replyWith(newMessage)
+        verify(delegate).replyWith(eq(newMessage))
     }
 
     @Test
     fun replyTo() {
         component.didReceive(message)
 
-        val replied = component.replyTo("connect")
-        assertEquals(true, replied)
-        verify(bridge).replyWith(eq(message))
+        component.replyTo("connect")
+        verify(delegate).replyWith(eq(message))
     }
 
     @Test
@@ -91,9 +87,8 @@ class BridgeComponentTest {
 
         component.didReceive(message)
 
-        val replied = component.replyTo("connect", newJsonData)
-        assertEquals(true, replied)
-        verify(bridge).replyWith(eq(newMessage))
+        component.replyTo("connect", newJsonData)
+        verify(delegate).replyWith(eq(newMessage))
     }
 
     @Test
@@ -103,9 +98,8 @@ class BridgeComponentTest {
 
         component.didReceive(message)
 
-        val replied = component.replyTo("connect", MessageData(title = "Page-title"))
-        assertEquals(true, replied)
-        verify(bridge).replyWith(eq(newMessage))
+        component.replyTo("connect", MessageData(title = "Page-title"))
+        verify(delegate).replyWith(eq(newMessage))
     }
 
     @Test
@@ -121,18 +115,16 @@ class BridgeComponentTest {
 
     @Test
     fun replyToIgnoresNotReceived() {
-        val replied = component.replyTo("connect")
-        assertEquals(false, replied)
-        verify(bridge, never()).replyWith(any())
+        component.replyTo("connect")
+        verify(delegate, never()).replyWith(any())
     }
 
     @Test
     fun replyToReplacingJsonDataIgnoresNotReceived() {
         val newJsonData = """{"title":"Page-title"}"""
 
-        val replied = component.replyTo("connect", newJsonData)
-        assertEquals(false, replied)
-        verify(bridge, never()).replyWith(any())
+        component.replyTo("connect", newJsonData)
+        verify(delegate, never()).replyWith(any())
     }
 
     @Serializable
