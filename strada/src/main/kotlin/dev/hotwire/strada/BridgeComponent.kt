@@ -63,7 +63,7 @@ abstract class BridgeComponent<in D : BridgeDestination>(
      */
     fun replyTo(event: String): Boolean {
         val message = receivedMessageFor(event) ?: run {
-            logEvent("bridgeMessageFailedToReply", "message for event '$event' was not received")
+            logWarning("bridgeMessageFailedToReply", "message for event '$event' was not received")
             return false
         }
 
@@ -79,7 +79,7 @@ abstract class BridgeComponent<in D : BridgeDestination>(
      */
     fun replyTo(event: String, jsonData: String): Boolean {
         val message = receivedMessageFor(event) ?: run {
-            logEvent("bridgeMessageFailedToReply", "message for event '$event' was not received")
+            logWarning("bridgeMessageFailedToReply", "message for event '$event' was not received")
             return false
         }
 

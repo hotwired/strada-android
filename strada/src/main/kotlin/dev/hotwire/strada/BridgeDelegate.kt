@@ -35,7 +35,7 @@ class BridgeDelegate<D : BridgeDestination>(
                 bridge?.load()
             }
         } else {
-            logEvent("bridgeNotInitializedForWebView", location)
+            logWarning("bridgeNotInitializedForWebView", location)
         }
     }
 
@@ -46,7 +46,7 @@ class BridgeDelegate<D : BridgeDestination>(
 
     fun replyWith(message: Message): Boolean {
         bridge?.replyWith(message) ?: run {
-            logEvent("bridgeMessageFailedToReply", "bridge is not available")
+            logWarning("bridgeMessageFailedToReply", "bridge is not available")
             return false
         }
 
@@ -59,11 +59,11 @@ class BridgeDelegate<D : BridgeDestination>(
 
     internal fun bridgeDidReceiveMessage(message: Message): Boolean {
         return if (destinationIsActive && location == message.metadata?.url) {
-            logMessage("bridgeDidReceiveMessage", message)
+            logEvent("bridgeDidReceiveMessage", message.toString())
             getOrCreateComponent(message.component)?.didReceive(message)
             true
         } else {
-            logMessage("bridgeDidIgnoreMessage", message)
+            logWarning("bridgeDidIgnoreMessage", message.toString())
             false
         }
     }
