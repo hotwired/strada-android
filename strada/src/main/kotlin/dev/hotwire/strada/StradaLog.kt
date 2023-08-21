@@ -32,5 +32,5 @@ internal fun logWarning(event: String, details: String) {
 }
 
 internal fun logError(event: String, error: Exception) {
-    StradaLog.e("$event: $error")
+    StradaLog.e("$event: ${error.stackTraceToString()}")
 }
