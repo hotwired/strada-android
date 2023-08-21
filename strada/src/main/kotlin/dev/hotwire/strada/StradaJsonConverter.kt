@@ -58,6 +58,6 @@ class KotlinXJsonConverter : StradaJsonConverter() {
     }
 
     fun logException(e: Exception) {
-        logEvent("kotlinXJsonConverterFailedWithError", e.toString())
+        logError("kotlinXJsonConverterFailedWithError", e)
     }
 }

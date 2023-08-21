@@ -47,7 +47,7 @@ class Bridge internal constructor(webView: WebView) {
     }
 
     internal fun replyWith(message: Message) {
-        logMessage("bridgeWillReplyWithMessage", message)
+        logEvent("bridgeWillReplyWithMessage", message.toString())
         val internalMessage = InternalMessage.fromMessage(message)
         val javascript = generateJavaScript("replyWith", internalMessage.toJson().toJsonElement())
         evaluate(javascript)
