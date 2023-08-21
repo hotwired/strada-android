@@ -91,6 +91,33 @@ class BridgeDelegateTest {
     }
 
     @Test
+    fun replyWith() {
+        val message = Message(
+            id = "1",
+            component = "page",
+            event = "connect",
+            metadata = Metadata("https://37signals.com/another_url"),
+            jsonData = """{"title":"Page-title","subtitle":"Page-subtitle"}"""
+        )
+
+        assertEquals(true, delegate.replyWith(message))
+    }
+
+    @Test
+    fun replyWithFailsWithoutBridge() {
+        val message = Message(
+            id = "1",
+            component = "page",
+            event = "connect",
+            metadata = Metadata("https://37signals.com/another_url"),
+            jsonData = """{"title":"Page-title","subtitle":"Page-subtitle"}"""
+        )
+
+        delegate.bridge = null
+        assertEquals(false, delegate.replyWith(message))
+    }
+
+    @Test
     fun onWebViewAttached() {
         whenever(bridge.isReady()).thenReturn(false)
         delegate.onWebViewAttached(webView)

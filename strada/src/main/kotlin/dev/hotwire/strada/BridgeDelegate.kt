@@ -44,6 +44,15 @@ class BridgeDelegate<D : BridgeDestination>(
         bridge = null
     }
 
+    fun replyWith(message: Message): Boolean {
+        bridge?.replyWith(message) ?: run {
+            logEvent("bridgeMessageFailedToReply", "bridge is not available")
+            return false
+        }
+
+        return true
+    }
+
     internal fun bridgeDidInitialize() {
         bridge?.register(componentFactories.map { it.name })
     }
