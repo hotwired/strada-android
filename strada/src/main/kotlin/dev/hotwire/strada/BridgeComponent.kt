@@ -6,19 +6,6 @@ abstract class BridgeComponent<in D : BridgeDestination>(
 ) {
     private val receivedMessages = hashMapOf<String, Message>()
 
-    internal fun didReceive(message: Message) {
-        receivedMessages[message.event] = message
-        onReceive(message)
-    }
-
-    internal fun didStart() {
-        onStart()
-    }
-
-    internal fun didStop() {
-        onStop()
-    }
-
     /**
      * Returns the last received message for a given `event`, if available.
      */
@@ -31,6 +18,38 @@ abstract class BridgeComponent<in D : BridgeDestination>(
      * message for its `event` type for the custom component's behavior.
      */
     abstract fun onReceive(message: Message)
+
+    /**
+     * This passes a received message to onReceive(message), caching it
+     * for use with replyTo(event) and receivedMessageFor(event).
+     *
+     * NOTE: This should not be called directly from within a component,
+     * but is available to use for testing.
+     */
+    fun didReceive(message: Message) {
+        receivedMessages[message.event] = message
+        onReceive(message)
+    }
+
+    /**
+     * This passes the start lifecycle event to onStart().
+     *
+     * NOTE: This should not be called directly from within a component,
+     * but is available to use for testing.
+     */
+    fun didStart() {
+        onStart()
+    }
+
+    /**
+     * This passes the stop lifecycle event to onStop().
+     *
+     * NOTE: This should not be called directly from within a component,
+     * but is available to use for testing.
+     */
+    fun didStop() {
+        onStop()
+    }
 
     /**
      * Called when the component's destination starts (and is active)
