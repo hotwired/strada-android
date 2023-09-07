@@ -2,8 +2,6 @@ package dev.hotwire.strada
 
 import android.content.Context
 import android.webkit.WebView
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.testing.TestLifecycleOwner
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
@@ -18,7 +16,7 @@ class BridgeTest {
     private val webView: WebView = mock()
     private val context: Context = mock()
     private val repository: Repository = mock()
-    private val delegate: BridgeDelegate<AppBridgeDestination> = mock()
+    private val delegate: BridgeDelegate<TestData.AppBridgeDestination> = mock()
 
     @Before
     fun setup() {
@@ -49,7 +47,7 @@ class BridgeTest {
     }
 
     @Test
-    fun send() {
+    fun replyWith() {
         val json = """{\"id\":\"1\",\"component\":\"page\",\"event\":\"connect\",\"data\":{\"title\":\"Page title\",\"subtitle\":\"Page subtitle\",\"html\":\"<span class='android'>content</span>\"}}"""
         val data = """{"title":"Page title","subtitle":"Page subtitle","html":"<span class='android'>content</span>"}"""
         val message = Message(
@@ -60,8 +58,8 @@ class BridgeTest {
             jsonData = data
         )
 
-        val javascript = """window.nativeBridge.send("$json")"""
-        bridge.send(message)
+        val javascript = """window.nativeBridge.replyWith("$json")"""
+        bridge.replyWith(message)
         verify(webView).evaluateJavascript(eq(javascript), any())
     }
 
@@ -133,12 +131,6 @@ class BridgeTest {
 
     @Test
     fun sanitizeFunctionName() {
-        assertEquals(bridge.sanitizeFunctionName("send()"), "send")
-    }
-
-    class AppBridgeDestination : BridgeDestination {
-        override fun bridgeDestinationLocation() = "https://37signals.com"
-        override fun bridgeDestinationLifecycleOwner() = TestLifecycleOwner()
-        override fun bridgeWebViewIsReady() = true
+        assertEquals(bridge.sanitizeFunctionName("replyWith()"), "replyWith")
     }
 }

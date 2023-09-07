@@ -3,30 +3,34 @@ package dev.hotwire.strada
 import android.util.Log
 
 @Suppress("unused")
-object StradaLog {
+internal object StradaLog {
     private const val DEFAULT_TAG = "StradaLog"
 
-    /**
-     * Enable debug logging to see message communication from/to the WebView.
-     */
-    var debugLoggingEnabled = false
+    private val debugEnabled get() = Strada.config.debugLoggingEnabled
 
-    internal fun d(msg: String) = log(Log.DEBUG, DEFAULT_TAG, msg)
+    internal fun d(msg: String) = log(Log.DEBUG, msg)
 
-    internal fun e(msg: String) = log(Log.ERROR, DEFAULT_TAG, msg)
+    internal fun w(msg: String) = log(Log.WARN, msg)
 
-    private fun log(logLevel: Int, tag: String, msg: String) {
+    internal fun e(msg: String) = log(Log.ERROR, msg)
+
+    private fun log(logLevel: Int, msg: String) {
         when (logLevel) {
-            Log.DEBUG -> if (debugLoggingEnabled) Log.d(tag, msg)
-            Log.ERROR -> Log.e(tag, msg)
+            Log.DEBUG -> if (debugEnabled) Log.d(DEFAULT_TAG, msg)
+            Log.WARN -> Log.w(DEFAULT_TAG, msg)
+            Log.ERROR -> Log.e(DEFAULT_TAG, msg)
         }
     }
 }
 
-internal fun logMessage(event: String, message: Message) {
-    logEvent(event, message.toString())
-}
-
 internal fun logEvent(event: String, details: String = "") {
     StradaLog.d("$event ".padEnd(35, '.') + " [$details]")
+}
+
+internal fun logWarning(event: String, details: String) {
+    StradaLog.w("$event ".padEnd(35, '.') + " [$details]")
+}
+
+internal fun logError(event: String, error: Exception) {
+    StradaLog.e("$event: ${error.stackTraceToString()}")
 }

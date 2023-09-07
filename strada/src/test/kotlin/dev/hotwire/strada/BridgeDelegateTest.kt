@@ -9,18 +9,24 @@ import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.whenever
 import org.junit.Assert.*
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito.verify
 
 class BridgeDelegateTest {
-    private lateinit var delegate: BridgeDelegate<AppBridgeDestination>
+    private lateinit var delegate: BridgeDelegate<TestData.AppBridgeDestination>
+    private lateinit var lifecycleOwner: TestLifecycleOwner
     private val bridge: Bridge = mock()
     private val webView: WebView = mock()
 
     private val factories = listOf(
-        BridgeComponentFactory("one", ::OneBridgeComponent),
-        BridgeComponentFactory("two", ::TwoBridgeComponent)
+        BridgeComponentFactory("one", TestData::OneBridgeComponent),
+        BridgeComponentFactory("two", TestData::TwoBridgeComponent)
     )
+
+    @Rule
+    @JvmField
+    var coroutinesTestRule = CoroutinesTestRule()
 
     @Before
     fun setup() {
@@ -28,10 +34,14 @@ class BridgeDelegateTest {
         Bridge.initialize(bridge)
 
         delegate = BridgeDelegate(
-            destination = AppBridgeDestination(),
+            location = "https://37signals.com",
+            destination = TestData.AppBridgeDestination(),
             componentFactories = factories
         )
         delegate.bridge = bridge
+
+        lifecycleOwner = TestLifecycleOwner(Lifecycle.State.STARTED)
+        lifecycleOwner.lifecycle.addObserver(delegate)
     }
 
     @Test
@@ -62,9 +72,9 @@ class BridgeDelegateTest {
             jsonData = """{"title":"Page-title","subtitle":"Page-subtitle"}"""
         )
 
-        assertNull(delegate.component<OneBridgeComponent>())
+        assertNull(delegate.component<TestData.OneBridgeComponent>())
         assertEquals(true, delegate.bridgeDidReceiveMessage(message))
-        assertNotNull(delegate.component<OneBridgeComponent>())
+        assertNotNull(delegate.component<TestData.OneBridgeComponent>())
     }
 
     @Test
@@ -78,6 +88,33 @@ class BridgeDelegateTest {
         )
 
         assertEquals(false, delegate.bridgeDidReceiveMessage(message))
+    }
+
+    @Test
+    fun replyWith() {
+        val message = Message(
+            id = "1",
+            component = "page",
+            event = "connect",
+            metadata = Metadata("https://37signals.com/another_url"),
+            jsonData = """{"title":"Page-title","subtitle":"Page-subtitle"}"""
+        )
+
+        assertEquals(true, delegate.replyWith(message))
+    }
+
+    @Test
+    fun replyWithFailsWithoutBridge() {
+        val message = Message(
+            id = "1",
+            component = "page",
+            event = "connect",
+            metadata = Metadata("https://37signals.com/another_url"),
+            jsonData = """{"title":"Page-title","subtitle":"Page-subtitle"}"""
+        )
+
+        delegate.bridge = null
+        assertEquals(false, delegate.replyWith(message))
     }
 
     @Test
@@ -112,28 +149,21 @@ class BridgeDelegateTest {
         assertNull(delegate.bridge)
     }
 
-    class AppBridgeDestination : BridgeDestination {
-        override fun bridgeDestinationLocation() = "https://37signals.com"
-        override fun bridgeDestinationLifecycleOwner() = TestLifecycleOwner(Lifecycle.State.STARTED)
-        override fun bridgeWebViewIsReady() = true
-    }
+    @Test
+    fun destinationIsInactive() {
+        val message = Message(
+            id = "1",
+            component = "one",
+            event = "connect",
+            metadata = Metadata("https://37signals.com"),
+            jsonData = """{"title":"Page-title","subtitle":"Page-subtitle"}"""
+        )
 
-    private abstract class AppBridgeComponent(
-        name: String,
-        delegate: BridgeDelegate<AppBridgeDestination>
-    ) : BridgeComponent<AppBridgeDestination>(name, delegate)
+        assertEquals(true, delegate.bridgeDidReceiveMessage(message))
+        assertNotNull(delegate.component<TestData.OneBridgeComponent>())
 
-    private class OneBridgeComponent(
-        name: String,
-        delegate: BridgeDelegate<AppBridgeDestination>
-    ) : AppBridgeComponent(name, delegate) {
-        override fun handle(message: Message) {}
-    }
-
-    private class TwoBridgeComponent(
-        name: String,
-        delegate: BridgeDelegate<AppBridgeDestination>
-    ) : AppBridgeComponent(name, delegate) {
-        override fun handle(message: Message) {}
+        lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
+        assertEquals(false, delegate.bridgeDidReceiveMessage(message))
+        assertNull(delegate.component<TestData.OneBridgeComponent>())
     }
 }

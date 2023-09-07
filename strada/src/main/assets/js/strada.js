@@ -51,8 +51,8 @@
       return this.supportedComponents.includes(component)
     }
 
-    // Send message to web
-    send(message) {
+    // Reply to web with message
+    replyWith(message) {
       if (this.isStradaAvailable) {
         this.webBridge.receive(JSON.parse(message))
       }

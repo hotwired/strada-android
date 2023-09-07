@@ -6,22 +6,16 @@ import androidx.lifecycle.LifecycleOwner
 
 @Suppress("unused")
 class BridgeDelegate<D : BridgeDestination>(
+    val location: String,
     val destination: D,
     private val componentFactories: List<BridgeComponentFactory<D, BridgeComponent<D>>>
-) {
+) : DefaultLifecycleObserver {
     internal var bridge: Bridge? = null
-    private var destinationIsActive = true
-    private val components = hashMapOf<String, BridgeComponent<D>>()
+    private var destinationIsActive: Boolean = false
+    private val initializedComponents = hashMapOf<String, BridgeComponent<D>>()
 
     val activeComponents: List<BridgeComponent<D>>
-        get() = when (destinationIsActive) {
-            true -> components.map { it.value }
-            else -> emptyList()
-        }
-
-    init {
-        observeLifeCycle()
-    }
+        get() = initializedComponents.map { it.value }.takeIf { destinationIsActive }.orEmpty()
 
     fun onColdBootPageCompleted() {
         bridge?.load()
@@ -41,7 +35,7 @@ class BridgeDelegate<D : BridgeDestination>(
                 bridge?.load()
             }
         } else {
-            logEvent("bridgeNotInitializedForWebView", destination.bridgeDestinationLocation())
+            logWarning("bridgeNotInitializedForWebView", location)
         }
     }
 
@@ -50,17 +44,26 @@ class BridgeDelegate<D : BridgeDestination>(
         bridge = null
     }
 
+    fun replyWith(message: Message): Boolean {
+        bridge?.replyWith(message) ?: run {
+            logWarning("bridgeMessageFailedToReply", "bridge is not available")
+            return false
+        }
+
+        return true
+    }
+
     internal fun bridgeDidInitialize() {
         bridge?.register(componentFactories.map { it.name })
     }
 
     internal fun bridgeDidReceiveMessage(message: Message): Boolean {
-        return if (destination.bridgeDestinationLocation() == message.metadata?.url) {
-            logMessage("bridgeDidReceiveMessage", message)
-            getOrCreateComponent(message.component)?.handle(message)
+        return if (destinationIsActive && location == message.metadata?.url) {
+            logEvent("bridgeDidReceiveMessage", message.toString())
+            getOrCreateComponent(message.component)?.didReceive(message)
             true
         } else {
-            logMessage("bridgeDidIgnoreMessage", message)
+            logWarning("bridgeDidIgnoreMessage", message.toString())
             false
         }
     }
@@ -71,22 +74,21 @@ class BridgeDelegate<D : BridgeDestination>(
 
     // Lifecycle events
 
-    private fun observeLifeCycle() {
-        destination.bridgeDestinationLifecycleOwner().lifecycle.addObserver(object :
-            DefaultLifecycleObserver {
-            override fun onStart(owner: LifecycleOwner) { onStart() }
-            override fun onStop(owner: LifecycleOwner) { onStop() }
-        })
-    }
-
-    private fun onStart() {
+    override fun onStart(owner: LifecycleOwner) {
+        logEvent("bridgeDestinationDidStart", location)
         destinationIsActive = true
-        activeComponents.forEach { it.onStart() }
+        activeComponents.forEach { it.didStart() }
     }
 
-    private fun onStop() {
+    override fun onStop(owner: LifecycleOwner) {
+        activeComponents.forEach { it.didStop() }
         destinationIsActive = false
-        activeComponents.forEach { it.onStop() }
+        logEvent("bridgeDestinationDidStop", location)
+    }
+
+    override fun onDestroy(owner: LifecycleOwner) {
+        destinationIsActive = false
+        logEvent("bridgeDestinationDidDestroy", location)
     }
 
     // Retrieve component(s) by type
@@ -101,6 +103,6 @@ class BridgeDelegate<D : BridgeDestination>(
 
     private fun getOrCreateComponent(name: String): BridgeComponent<D>? {
         val factory = componentFactories.firstOrNull { it.name == name } ?: return null
-        return components.getOrPut(name) { factory.create(this) }
+        return initializedComponents.getOrPut(name) { factory.create(this) }
     }
 }

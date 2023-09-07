@@ -1,9 +1,9 @@
 package dev.hotwire.strada
 
-data class Message(
+data class Message constructor(
     /**
-     * A unique identifier for this message. You can reply to messages by sending
-     * the same message back, or creating a new message with the same id
+     * A unique identifier for this message. When you reply to the web with
+     * a message, this identifier is used to find its previously sent message.
      */
     val id: String,
 
@@ -43,6 +43,17 @@ data class Message(
         metadata = this.metadata,
         jsonData = jsonData
     )
+
+    inline fun <reified T> replacing(
+        event: String = this.event,
+        data: T
+    ): Message {
+        return replacing(event, StradaJsonConverter.toJson(data))
+    }
+
+    inline fun <reified T> data(): T? {
+        return StradaJsonConverter.toObject(jsonData)
+    }
 }
 
 data class Metadata(
