@@ -1,20 +1,19 @@
 # Strada Android
 
-**[Strada](https://strada.hotwired.dev)** is a set of libraries that work across your web, iOS, and Android apps to help you build features that make your mobile hybrid apps stand out. Turn HTML elements that exist in the WebView into native components and communicate messages across your native and web code.
+**[Strada](https://strada.hotwired.dev)** is a set of libraries that work across your web, iOS, and Android apps to help you build features that make your [Turbo Native](https://turbo.hotwired.dev/handbook/native) hybrid apps stand out. Turn HTML elements that exist in the WebView into native components and communicate messages across your native and web code.
 
 **Strada Android** enables you to create native components that receive and reply to messages from web components that are present on the page. Native components use received messages to run native code, whether it's to build high fidelity native UI or call platform APIs.
 
 ## Features
-- **Create high-fidelity native features** in your hybrid app, driven by the web.
+- **Level up** your [Turbo Native](https://turbo.hotwired.dev/handbook/native) hybrid apps with high-fidelity native features, driven by the web.
 - **Reuse web components** for your [iOS](https://github.com/hotwired/strada-ios) and Android apps.
 - **Communicate with the WebView** and its web components without writing any javascript in your app.
-- **Level up** your hybrid (Turbo Native)[https://turbo.hotwired.dev/handbook/native) apps with rich native features.
 
 ## Requirements
 
 1. Android SDK 24+ is required as the `minSdkVersion` in your build.gradle.
 1. This library is written entirely in [Kotlin](https://kotlinlang.org/), and your app should use Kotlin as well. Compatibility with Java is not provided or supported.
-1. This library supports (Turbo Native)[https://turbo.hotwired.dev/handbook/native) hybrid apps.
+1. This library supports [Turbo Native](https://turbo.hotwired.dev/handbook/native) hybrid apps.
 1. Your web app must be running [strada-web](https://github.com/hotwired/strada-web). The `window.Strada` object is automatically exposed on the loaded WebView page, which enables **strada-android** to work.
 
 **Note:** You should understand how Strada works in the browser before attempting to use Strada Android. See the [Strada documentation](https://strada.hotwired.dev) for details.
