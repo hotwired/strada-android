@@ -1,12 +1,10 @@
 # Quick Start Guide
 
-_You can find the code in this guide fully implemented in the `turbo-android` [demo app](https://github.com/hotwired/turbo-android/tree/main/demo)._
+This outlines everything you need to initially configure in your [`turbo-android`](https://github.com/hotwired/turbo-android) app to integrate `strada-android`. Everything in this guide only needs to be done once in your app. 
 
-## Configuration
+_NOTE: You can find the code in this guide fully implemented in the `turbo-android` [demo app](https://github.com/hotwired/turbo-android/tree/main/demo)._
 
-There are a few things you need to initially configure in your [`turbo-android`](https://github.com/hotwired/turbo-android) app to integrate `strada-android`. 
-
-### Create a list of registered bridge components
+## Create a list of registered bridge components
 
 For now, create an empty (global) list of registered component factories, so we have a reference. You'll need to populate this list with each bridge component that your app supports.
 
@@ -17,7 +15,7 @@ val bridgeComponentFactories = listOf(
 )
 ```
 
-### Initialize the WebView instance
+## Initialize the WebView instance
 
 For Strada to work properly across your web and native app, you'll need to make sure each `TurboSession` `WebView` instance is initialized with the following:
 - An updated user agent string that includes the supported bridge components. Strada provides a utility function that builds the substring for you.
@@ -52,7 +50,7 @@ class MainSessionNavHostFragment : TurboSessionNavHostFragment() {
 }
 ```
 
-### Set a JSON converter
+## Configure a JSON converter
 Strada passes messages with json serialized `data` between the `WebView` and native code. If you'd like to take advantage of automatic de/serialization between your own `data` models and `strada-android`, you must set a converter class that implements `StradaJsonConverter`. We suggest using the [kotlinx.serialization](https://kotlinlang.org/docs/serialization.html#example-json-serialization) library. If you decide to use `kotlinx.serialization`, `strada-android` provides an automatic `KotlinXJsonConverter()` class that you can use with no extra work:
 
 **`MainActivity.kt`:**
@@ -135,10 +133,6 @@ class WebFragment : TurboWebFragment(), NavDestination {
 }
 ```
 
-
 ## Build your first `BridgeComponent` 
 
-`// TODO`
-
-
-
+You're now down with the initial setup. See the [Build Components](BUILD-COMPONENTS.md) page to build your first bridge component.

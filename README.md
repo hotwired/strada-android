@@ -19,15 +19,14 @@
 **Note:** You should understand how Strada works in the browser before attempting to use Strada Android. See the [Strada documentation](https://strada.hotwired.dev) for details.
 
 ## Getting Started
-The best way to get started with Strada Android is to try out the Turbo Android demo app first to get familiar with the framework and what it offers. The demo app provides several Strada component examples. To run the demo, clone the [turbo-android](https://github.com/hotwired/turbo-android) repo, and read the  [instructions](https://github.com/hotwired/turbo-android/tree/main/demo#readme).
-
-See the [instructions to build this project yourself](docs/BUILD-PROJECT.md).
+The best way to get started with Strada Android is to try out the Turbo Android demo app first to get familiar with the framework and what it offers. The demo app provides several Strada component examples. To run the demo, clone the [turbo-android](https://github.com/hotwired/turbo-android) repo, and read the [instructions](https://github.com/hotwired/turbo-android/tree/main/demo#readme).
 
 ## Documentation
 
 1. [Installation](docs/INSTALLATION.md)
 1. [Overview](docs/OVERVIEW.md)
 1. [Quick Start](docs/QUICK-START.md)
+1. [Build Components](docs/BUILD-COMPONENTS.md)
 1. [Advanced Options](docs/ADVANCED-OPTIONS.md)
 
 ## Contributing
