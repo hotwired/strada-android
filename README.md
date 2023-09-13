@@ -2,7 +2,7 @@
 
 **[Strada](https://strada.hotwired.dev)** is a set of libraries that work across your web, iOS, and Android apps to help you build features that make your mobile hybrid apps stand out. Turn HTML elements that exist in the WebView into native components and communicate messages across your native and web code.
 
-<b>Strada Android<b> enables you to create native components that receive and reply to messages from web components that are present on the page. Native components use received messages to run native code, whether it's to build high fidelity native UI or call platform APIs.
+**Strada Android** enables you to create native components that receive and reply to messages from web components that are present on the page. Native components use received messages to run native code, whether it's to build high fidelity native UI or call platform APIs.
 
 ## Features
 - **Create high-fidelity native features** in your hybrid app, driven by the web.
