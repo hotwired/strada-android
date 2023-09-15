@@ -67,7 +67,7 @@ class FormComponent(
 
 ## Reply to received messages
 
-If you'd like to inform the corresponding web component that an action has occurred, such as the user clicking on a submit button, you can reply to the originally received message. For the `FormComponent` it looks like this:
+If you'd like to inform the corresponding web component that an action has occurred, such as the user tapping on a submit button, you can reply to the originally received message. For the `FormComponent` it looks like this:
 
 **`FormComponent.kt`**
 ```kotlin
@@ -96,9 +96,9 @@ class FormComponent(
 }
 ```
 
-When a web component receives a reply from a sent messages, it can run a callback to perform the appropriate action in the web app. In this example, tapping on the native submit button and sending back a reply results in the web `"form"` component clicking the hidden web submit button in its form.
+When a web component receives a reply from a sent message, it can run a callback to perform the appropriate action in the web app. In this example, tapping on the native submit button and sending back a reply results in the web `"form"` component clicking the hidden web submit button in its form.
 
-For convenience, there are multiple ways to reply to received messages:
+For convenience, there are multiple ways to reply to received messages. If you use `replyTo(eventName)`, the `BridgeComponent` internally replies with the last message received for the given `eventName`. The available reply options are:
 
 ```kotlin
 replyTo("eventName")
