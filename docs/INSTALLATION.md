@@ -9,11 +9,13 @@ repositories {
 }
 
 dependencies {
-    implementation 'dev.hotwire:strada:1.0.0-beta01'
+    implementation 'dev.hotwire:strada:<latest-version>'
 }
 ```
 
 See the [latest version](https://bintray.com/hotwire/maven/strada-android) available on Bintray/JCenter.
+
+**Note:** `strada-android` works seamlessly with [turbo-android](https://github.com/hotwired/turbo-android) and the documentation provides instructions for integrating Strada with your [Turbo Native](https://turbo.hotwired.dev/handbook/native) app. Keep in mind that `turbo-android` is not automatically included as a dependency in `strada-android`, so you'll want to setup your `turbo-android` app first.
 
 ## Required `minSdkVersion`
 Android SDK 24 (or greater) is required as the `minSdkVersion` in your app module's `build.gradle` file:
@@ -54,6 +56,6 @@ repositories {
 }
 
 dependencies {
-    implementation 'dev.hotwire:strada:1.0.0-alpha01'
+    implementation 'dev.hotwire:strada:<pre-release-version>'
 }
 ```

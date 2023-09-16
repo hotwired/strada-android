@@ -8,7 +8,7 @@ _NOTE: You can find the code in this guide fully implemented in the `turbo-andro
 
 For now, create an empty (global) list of registered component factories, so we have a reference. You'll need to populate this list with each bridge component that your app supports.
 
-**`BridgeComponentFactories.kt`:**
+**`BridgeComponentFactories.kt`**
 ```kotlin
 val bridgeComponentFactories = listOf(
     // Add registered components here later
@@ -23,7 +23,7 @@ For Strada to work properly across your web and native app, you'll need to make 
 
 The place to do this is in each `TurboSessionNavHostFragment` in your app:
 
-**`MainSessionNavHostFragment.kt`:**
+**`MainSessionNavHostFragment.kt`**
 ```kotlin
 class MainSessionNavHostFragment : TurboSessionNavHostFragment() {
     
@@ -53,7 +53,7 @@ class MainSessionNavHostFragment : TurboSessionNavHostFragment() {
 ## Configure a JSON converter
 Strada passes messages with json serialized `data` between the `WebView` and native code. If you'd like to take advantage of automatic de/serialization between your own `data` models and `strada-android`, you must set a converter class that implements `StradaJsonConverter`. We suggest using the [kotlinx.serialization](https://kotlinlang.org/docs/serialization.html#example-json-serialization) library. If you decide to use `kotlinx.serialization`, `strada-android` provides an automatic `KotlinXJsonConverter()` class that you can use with no extra work:
 
-**`MainActivity.kt`:**
+**`MainActivity.kt`**
 ```kotlin
 class MainActivity : AppCompatActivity(), TurboActivity {
 
@@ -77,7 +77,7 @@ If you'd rather use another de/serialization library like [Moshi](https://github
 ## Implement the `BridgeDestination` interface
 You'll need to implement the `BridgeDestination` interface where your `TurboNavDestination` is present:
 
-**`NavDestination.kt`:**
+**`NavDestination.kt`**
 ```kotlin
 interface NavDestination : TurboNavDestination, BridgeDestination {
     
@@ -92,7 +92,7 @@ interface NavDestination : TurboNavDestination, BridgeDestination {
 ## Delegate to the `BridgeDelegate` class
 You'll need to delegate the `TurboWebFragment` lifecycle callbacks to the `BridgeDelegate` class:
 
-**`WebFragment.kt`:**
+**`WebFragment.kt`**
 ```kotlin
 class WebFragment : TurboWebFragment(), NavDestination {
     private val bridgeDelegate by lazy {

@@ -2,12 +2,12 @@
 
 **[Strada](https://strada.hotwired.dev)** lets you create high fidelity native features driven by your web app. It's a set of libraries that work across your [web](https://github.com/hotwired/strada-web), [iOS](https://github.com/hotwired/strada-ios), and Android apps to help you build features that make your [Turbo Native](https://turbo.hotwired.dev/handbook/native) hybrid apps stand out. Turn HTML elements that exist in the WebView into native components and communicate messages across your native and web code.
 
-**Strada Android** enables you to create native components that receive and reply to messages from web components that are present on the page. Native components use received messages to run native code, whether it's to build high fidelity native UI or call platform APIs.
+**Strada Android** enables you to create native components that receive and reply to messages from web components that are present on the page. Native components receive messages to run native code, whether it's to build high fidelity native UI or call platform APIs.
 
 ## Features
 - **Level up** your [Turbo Native](https://turbo.hotwired.dev/handbook/native) hybrid apps with high-fidelity native components, driven by web components.
 - **Reuse web components** for your [iOS](https://github.com/hotwired/strada-ios) and Android apps.
-- **Communicate with the WebView** and its web components without writing any javascript in your app.
+- **Communicate with the WebView** and its web components without writing any JavaScript in your app.
 
 ## Requirements
 
