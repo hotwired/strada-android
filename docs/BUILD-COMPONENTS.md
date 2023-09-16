@@ -123,3 +123,7 @@ val bridgeComponentFactories = listOf(
 ```
 
 The `name` (`"form"` in this instance) that you give to each component must be unique and match the name of the web component that it corresponds to.
+
+## Using your component
+
+Your component is now ready. Whenever a web `form` component exists on a page in your web app, it'll automatically send messages to your app, a `FormComponent` instance will be created for you, and your component's native code will be invoked.
