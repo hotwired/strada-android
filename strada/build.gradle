@@ -2,17 +2,26 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlinx-serialization'
 apply plugin: 'maven-publish'
+apply plugin: 'signing'
 
 ext {
     libVersionName = version
-    libraryName = 'Strada for Android'
-    libraryDescription = 'Android framework for making better hybrid apps'
+    libraryName = 'Strada Android'
+    libraryDescription = 'Create fully native Android controls, driven by your web app'
 
     publishedGroupId = 'dev.hotwire'
     publishedArtifactId = 'strada'
 
     siteUrl = 'https://github.com/hotwired/strada-android'
     gitUrl = 'https://github.com/hotwired/strada-android.git'
+
+    licenseType = 'MIT License'
+    licenseUrl = 'https://github.com/hotwired/strada-android/blob/main/LICENSE'
+
+    developerId = 'basecamp'
+    developerEmail = 'androidteam@basecamp.com'
+
+    isSonatypeRelease = project.hasProperty('sonatype')
 }
 
 buildscript {
@@ -98,12 +107,53 @@ task androidSourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
 }
 
+// Only sign Sonatype release artifacts
+tasks.withType(Sign) {
+    onlyIf { isSonatypeRelease }
+}
+
+// Sign Sonatype published release artifacts
+if (isSonatypeRelease) {
+    signing {
+        def keyId = System.getenv('GPG_KEY_ID')
+        def secretKey = System.getenv("GPG_SECRET_KEY")
+        def password = System.getenv("GPG_PASSWORD")
+
+        useInMemoryPgpKeys(keyId, secretKey, password)
+
+        required { gradle.taskGraph.hasTask("publish") }
+        sign publishing.publications
+    }
+}
+
 // Publish to GitHub Packages via ./gradlew -Pversion=<version> clean build publish
 // https://github.com/orgs/hotwired/packages?repo_name=strada-android
 afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
+                pom {
+                    name = libraryName
+                    description = libraryDescription
+                    url = siteUrl
+                    licenses {
+                        license {
+                            name = licenseType
+                            url = licenseUrl
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = developerId
+                            name = developerId
+                            email = developerEmail
+                        }
+                    }
+                    scm {
+                        url = gitUrl
+                    }
+                }
+
                 // Applies the component for the release build variant
                 from components.release
 
@@ -117,13 +167,24 @@ afterEvaluate {
             }
         }
         repositories {
-            maven {
-                name = 'GitHubPackages'
-                url = uri('https://maven.pkg.github.com/hotwired/strada-android')
+            if (isSonatypeRelease) {
+                maven {
+                    url = uri('https://s01.oss.sonatype.org/content/repositories/releases/')
 
-                credentials {
-                    username = System.getenv('GITHUB_ACTOR')
-                    password = System.getenv('GITHUB_TOKEN')
+                    credentials {
+                        username = System.getenv('SONATYPE_USER')
+                        password = System.getenv('SONATYPE_PASSWORD')
+                    }
+                }
+            } else {
+                maven {
+                    name = 'GitHubPackages'
+                    url = uri('https://maven.pkg.github.com/hotwired/strada-android')
+
+                    credentials {
+                        username = System.getenv('GITHUB_ACTOR')
+                        password = System.getenv('GITHUB_TOKEN')
+                    }
                 }
             }
         }
