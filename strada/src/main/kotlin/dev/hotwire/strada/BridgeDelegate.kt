@@ -58,7 +58,10 @@ class BridgeDelegate<D : BridgeDestination>(
     }
 
     internal fun bridgeDidReceiveMessage(message: Message): Boolean {
-        return if (destinationIsActive && location == message.metadata?.url) {
+        val sanitizedLocation = location.trimEnd('/')
+        val sanitizedUrl = message.metadata?.url?.trimEnd('/')
+
+        return if (destinationIsActive && sanitizedLocation == sanitizedUrl) {
             logEvent("bridgeDidReceiveMessage", message.toString())
             getOrCreateComponent(message.component)?.didReceive(message)
             true
