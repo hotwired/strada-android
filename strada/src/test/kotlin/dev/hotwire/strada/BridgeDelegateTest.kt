@@ -78,6 +78,23 @@ class BridgeDelegateTest {
     }
 
     @Test
+    fun bridgeDidReceiveMessageForResolvedLocation() {
+        whenever(webView.url).thenReturn("https://37signals.com/new_url")
+
+        val message = Message(
+            id = "1",
+            component = "one",
+            event = "connect",
+            metadata = Metadata("https://37signals.com/new_url"),
+            jsonData = """{"title":"Page-title","subtitle":"Page-subtitle"}"""
+        )
+
+        assertNull(delegate.component<TestData.OneBridgeComponent>())
+        assertEquals(true, delegate.bridgeDidReceiveMessage(message))
+        assertNotNull(delegate.component<TestData.OneBridgeComponent>())
+    }
+
+    @Test
     fun bridgeDidReceiveMessageIgnored() {
         val message = Message(
             id = "1",
