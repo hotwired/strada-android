@@ -1,19 +1,17 @@
 # Installation
 
 ## Gradle
-Add the dependency from jCenter to your app module's (not top-level) `build.gradle` file:
+Add the dependency from Maven Central to your app module's (not top-level) `build.gradle` file:
 
 ```groovy
-repositories {
-    jcenter()
-}
-
 dependencies {
     implementation 'dev.hotwire:strada:<latest-version>'
 }
 ```
 
-See the [latest version](https://bintray.com/hotwire/maven/strada-android) available on Bintray/JCenter.
+[![Download](https://img.shields.io/maven-central/v/dev.hotwire/strada)](https://search.maven.org/artifact/dev.hotwire/strada)
+
+See the [latest version](https://search.maven.org/artifact/dev.hotwire/strada) available on Maven Central.
 
 **Note:** `strada-android` works seamlessly with [turbo-android](https://github.com/hotwired/turbo-android) and the documentation provides instructions for integrating Strada with your [Turbo Native](https://turbo.hotwired.dev/handbook/native) app. Keep in mind that `turbo-android` is not automatically included as a dependency in `strada-android`, so you'll want to setup your `turbo-android` app first.
 
