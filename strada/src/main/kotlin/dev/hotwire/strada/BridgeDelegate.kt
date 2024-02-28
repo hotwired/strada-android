@@ -13,6 +13,8 @@ class BridgeDelegate<D : BridgeDestination>(
     internal var bridge: Bridge? = null
     private var destinationIsActive: Boolean = false
     private val initializedComponents = hashMapOf<String, BridgeComponent<D>>()
+    private val resolvedLocation: String
+        get() = bridge?.webView?.url ?: location
 
     val activeComponents: List<BridgeComponent<D>>
         get() = initializedComponents.map { it.value }.takeIf { destinationIsActive }.orEmpty()
@@ -35,7 +37,7 @@ class BridgeDelegate<D : BridgeDestination>(
                 bridge?.load()
             }
         } else {
-            logWarning("bridgeNotInitializedForWebView", location)
+            logWarning("bridgeNotInitializedForWebView", resolvedLocation)
         }
     }
 
@@ -58,7 +60,7 @@ class BridgeDelegate<D : BridgeDestination>(
     }
 
     internal fun bridgeDidReceiveMessage(message: Message): Boolean {
-        return if (destinationIsActive && location == message.metadata?.url) {
+        return if (destinationIsActive && resolvedLocation == message.metadata?.url) {
             logEvent("bridgeDidReceiveMessage", message.toString())
             getOrCreateComponent(message.component)?.didReceive(message)
             true
@@ -75,7 +77,7 @@ class BridgeDelegate<D : BridgeDestination>(
     // Lifecycle events
 
     override fun onStart(owner: LifecycleOwner) {
-        logEvent("bridgeDestinationDidStart", location)
+        logEvent("bridgeDestinationDidStart", resolvedLocation)
         destinationIsActive = true
         activeComponents.forEach { it.didStart() }
     }
@@ -83,12 +85,12 @@ class BridgeDelegate<D : BridgeDestination>(
     override fun onStop(owner: LifecycleOwner) {
         activeComponents.forEach { it.didStop() }
         destinationIsActive = false
-        logEvent("bridgeDestinationDidStop", location)
+        logEvent("bridgeDestinationDidStop", resolvedLocation)
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
         destinationIsActive = false
-        logEvent("bridgeDestinationDidDestroy", location)
+        logEvent("bridgeDestinationDidDestroy", resolvedLocation)
     }
 
     // Retrieve component(s) by type
