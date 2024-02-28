@@ -16,10 +16,10 @@ See the [latest version](https://search.maven.org/artifact/dev.hotwire/strada) a
 **Note:** `strada-android` works seamlessly with [turbo-android](https://github.com/hotwired/turbo-android) and the documentation provides instructions for integrating Strada with your [Turbo Native](https://turbo.hotwired.dev/handbook/native) app. Keep in mind that `turbo-android` is not automatically included as a dependency in `strada-android`, so you'll want to setup your `turbo-android` app first.
 
 ## Required `minSdkVersion`
-Android SDK 24 (or greater) is required as the `minSdkVersion` in your app module's `build.gradle` file:
+Android SDK 26 (or greater) is required as the `minSdkVersion` in your app module's `build.gradle` file:
 ```groovy
 defaultConfig {
-    minSdkVersion 24
+    minSdkVersion 26
     ...
 }
 ```
