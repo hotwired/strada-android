@@ -11,7 +11,7 @@
 
 ## Requirements
 
-1. Android SDK 26+ is required as the `minSdkVersion` in your build.gradle.
+1. Android SDK 26+ is required as the `minSdk` in your `build.gradle.kts` file.
 1. This library is written entirely in [Kotlin](https://kotlinlang.org/), and your app should use Kotlin as well. Compatibility with Java is not provided or supported.
 1. This library supports [Turbo Native](https://turbo.hotwired.dev/handbook/native) hybrid apps.
 1. Your web app must be running [strada-web](https://github.com/hotwired/strada-web). The `window.Strada` object is automatically exposed on the loaded WebView page, which enables `strada-android` to work.
