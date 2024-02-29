@@ -24,17 +24,6 @@ val developerEmail by extra("androidteam@basecamp.com")
 
 val isSonatypeRelease by extra(project.hasProperty("sonatype"))
 
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-serialization:1.9.10")
-    }
-}
-
 repositories {
     google()
     mavenCentral()
