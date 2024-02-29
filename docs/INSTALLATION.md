@@ -1,11 +1,11 @@
 # Installation
 
 ## Gradle
-Add the dependency from Maven Central to your app module's (not top-level) `build.gradle` file:
+Add the dependency from Maven Central to your app module's (not top-level) `build.gradle.kts` file:
 
-```groovy
+```kotlin
 dependencies {
-    implementation 'dev.hotwire:strada:<latest-version>'
+    implementation("dev.hotwire:strada:<latest-version>")
 }
 ```
 
@@ -17,10 +17,13 @@ See the [latest version](https://search.maven.org/artifact/dev.hotwire/strada) a
 
 ## Required `minSdkVersion`
 Android SDK 26 (or greater) is required as the `minSdkVersion` in your app module's `build.gradle` file:
-```groovy
+```kotlin
+compileSdk = 34
+
 defaultConfig {
-    minSdkVersion 26
-    ...
+    minSdk = 26
+    targetSdk = 34
+    // ...
 }
 ```
 
@@ -40,7 +43,7 @@ export GITHUB_ACCESS_TOKEN='<your personal access token>'
 ##  Gradle
 Add the GitHub Packages maven repository and the dependency to your app module's `build.gradle` file:
 
-```groovy
+```kotlin
 repositories {
     maven {
         name = "GitHubPackages"
@@ -54,6 +57,6 @@ repositories {
 }
 
 dependencies {
-    implementation 'dev.hotwire:strada:<pre-release-version>'
+    implementation("dev.hotwire:strada:<pre-release-version>")
 }
 ```
