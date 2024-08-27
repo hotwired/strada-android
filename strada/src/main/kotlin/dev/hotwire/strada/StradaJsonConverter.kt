@@ -1,9 +1,9 @@
 package dev.hotwire.strada
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.lang.Exception
 
 abstract class StradaJsonConverter {
     companion object {
@@ -42,12 +42,18 @@ abstract class StradaJsonTypeConverter : StradaJsonConverter() {
 }
 
 class KotlinXJsonConverter : StradaJsonConverter() {
-    val json = Json { ignoreUnknownKeys = true }
+    @OptIn(ExperimentalSerializationApi::class)
+    val json = Json {
+        ignoreUnknownKeys = true
+        encodeDefaults = true
+        explicitNulls = false
+        isLenient = true
+    }
 
     inline fun <reified T> toObject(jsonData: String): T? {
         return try {
             json.decodeFromString(jsonData)
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             logException(e)
             null
         }

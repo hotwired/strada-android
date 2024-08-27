@@ -1,5 +1,6 @@
 package dev.hotwire.strada
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -27,4 +28,10 @@ internal inline fun <reified T> String.decode(): T? = try {
     null
 }
 
-private val json = Json { ignoreUnknownKeys = true }
+@OptIn(ExperimentalSerializationApi::class)
+private val json = Json {
+    ignoreUnknownKeys = true
+    encodeDefaults = true
+    explicitNulls = false
+    isLenient = true
+}
